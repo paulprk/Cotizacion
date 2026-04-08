@@ -71,7 +71,7 @@ st.markdown(f'<div class="cotizacion-box">Cotización: 1 USD = {COTIZACION_OFICI
 # NUEVO: Selector de Modo
 st.markdown("---")
 opcion_giro = st.selectbox("¿Qué operación desea realizar?", 
-                         ["💵 Dólares a Pesos (Recibir en AR)", "🇦🇷 Pesos a Dólares (Recibir en USD)"])
+                         ["💵 Dólares a Pesos (Recibir en ARS)", "🇦🇷 Pesos a Dólares (Recibir en USD)"])
 
 if 'calc_step' not in st.session_state:
     st.session_state.calc_step = False
