@@ -132,10 +132,10 @@ if st.session_state.calc_step:
     c_cta1, c_cta2 = st.columns(2)
     with c_cta1:
         # Placeholder específico: ingrese datos
-        cvu_cbu = st.text_input("Ingrese su CVU/CBU o Alias:", placeholder="ingrese datos")
+        cvu_cbu = st.text_input("Ingrese su CVU/CBU o Alias:", placeholder="Ingrese Informacion")
     with c_cta2:
         # Placeholder específico: ingrese nombre
-        nombre_titular = st.text_input("Ingrese nombre y apellido:", placeholder="ingrese nombre")
+        nombre_titular = st.text_input("Ingrese nombre y apellido:", placeholder="Ingrese su Nombre y Apellido")
 
     datos_completos = cvu_cbu.strip() != "" and nombre_titular.strip() != ""
     
