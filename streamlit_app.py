@@ -5,7 +5,7 @@ import urllib.parse
 # ==========================================
 # CONFIGURACIÓN DE TASA (MODIFICA AQUÍ)
 # ==========================================
-COTIZACION_OFICIAL = 1440
+COTIZACION_OFICIAL = 1445
 # ==========================================
 
 st.set_page_config(page_title="Arqui Giros - Oficial", page_icon="💸")
