@@ -108,7 +108,7 @@ if opcion == "💵 Dólares a Pesos":
         except ValueError: dol = 0.0
     with col2:
         comision_sel = st.radio("Comisión", ["Incluida", "Aparte"], disabled=st.session_state.calc_step)
-        text_com = "La comisión se descuenta del valor (monto - comisión)" if comision_sel == "Incluida" else "La comisión se suma al valor (monto + comisión)"
+        text_com = "La comisión se descuenta del valor \n (monto - comisión)" if comision_sel == "Incluida" else "La comisión se suma al valor (monto + comisión)"
         st.markdown(f'<p class="comision-info">{text_com}</p>', unsafe_allow_html=True)
 
     if not st.session_state.calc_step:
