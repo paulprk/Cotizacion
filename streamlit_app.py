@@ -85,7 +85,8 @@ st.markdown(title_html, unsafe_allow_html=True)
 # Mostrar Doble Cotización
 st.markdown(f"""
     <div class="cotizacion-container">
-        <div class="cotizacion-box">Cotización: 1 USD = {TASA_USD_A_ARS:,} ARS</div>
+        <div class="cotizacion-box">Cotización: </div>
+        <div class="cotizacion-box">1 USD = {TASA_USD_A_ARS:,} ARS</div>
         <div class="cotizacion-box">{TASA_ARS_A_USD:,} ARS = 1 USD</div>
     </div>
     """.replace(",", "."), unsafe_allow_html=True)
