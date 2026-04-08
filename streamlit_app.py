@@ -88,7 +88,7 @@ if btn_cotizar:
         if comision_sel == "Incluida":
             monto_recibir_ars = (dol - com_final) * COTIZACION_OFICIAL
             monto_transferir_usd = dol
-            txt_com = f"{com_final:.2f} USD (Deducida)"
+            txt_com = f"{com_final:.2f} USD (Incluida)"
         else:
             monto_recibir_ars = dol * COTIZACION_OFICIAL
             monto_transferir_usd = dol + com_final
