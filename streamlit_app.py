@@ -201,9 +201,14 @@ elif opcion == "🇦🇷 Pesos a Dólares":
     if 'calc_step_ars' not in st.session_state:
         st.session_state.calc_step_ars = False
 
-    # Selector de tipo de cálculo
+    # 1. Creamos la función para reiniciar al cambiar de opción
+    def reset_cotizacion_ars():
+        st.session_state.calc_step_ars = False
+
+    # 2. Selector de tipo de cálculo (con la función de reinicio agregada)
     tipo_calculo = st.radio("¿Qué desea calcular?", 
-                             ["Saber cuántos USD recibo (tengo Pesos)", "Saber cuántos ARS necesito (necesito USD)"])
+                             ["Saber cuántos USD recibo (tengo Pesos)", "Saber cuántos ARS necesito (necesito USD)"],
+                             on_change=reset_cotizacion_ars)
 
     # Entrada de monto
     if "recibo" in tipo_calculo:
@@ -215,6 +220,7 @@ elif opcion == "🇦🇷 Pesos a Dólares":
         try: monto_usr = float(monto_usd_in.replace(",", "."))
         except: monto_usr = 0.0
 
+    # Botón de calcular
     if not st.session_state.calc_step_ars:
         if st.button("🚀 CALCULAR COTIZACIÓN", key="btn_ars"):
             if monto_usr > 0:
