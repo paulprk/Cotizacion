@@ -312,3 +312,9 @@ st.markdown("""
         Términos y Condiciones <a href='https://docs.google.com/document/d/165fPXyI-lQd3k9XbHgXii5wIor9cxmQRL59wJm5HP9g/edit?usp=sharing' target='_blank' style='color: #0066cc; text-decoration: none; font-weight: bold;'>click aquí</a>
     </p>
 """, unsafe_allow_html=True)
+
+st.markdown("""
+    <p style='text-align: center; font-size: 13px; color: #666666;'>
+        Grupo de Whatsapp <a href='https://chat.whatsapp.com/BkFoCkC73cD2LlFj3Wz9Wu?mode=gi_t' target='_blank' style='color: #0066cc; text-decoration: none; font-weight: bold;'>click aquí</a>
+    </p>
+""", unsafe_allow_html=True)
