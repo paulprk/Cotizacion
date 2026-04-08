@@ -183,7 +183,7 @@
         <div id="ars_usd_inputs">
             <label style="text-align: center; font-size: 16px;">¿Qué desea calcular?</label>
             <div class="radio-group" style="flex-direction: column; align-items: center;">
-                <label><input type="radio" name="ars_tipo" value="recibo" checked onchange="cambiarTipoArs()"> USD a recibir (tengo Pesos)</label>
+                <label><input type="radio" name="ars_tipo" value="recibo" checked onchange="cambiarTipoArs()"> Tengo Pesos -> Necesito Dolares</label>
                 <label><input type="radio" name="ars_tipo" value="necesito" onchange="cambiarTipoArs()"> USD exactos a recibir</label>
             </div>
             
@@ -280,8 +280,8 @@
     }
 
     // Inicializar UI
-    document.getElementById('tasaUsdToArsDisplay').innerText = `1 USD = ${f_ars(TASA_USD_A_ARS)} ARS`;
-    document.getElementById('tasaArsToUsdDisplay').innerText = `${f_ars(TASA_ARS_A_USD)} ARS = 1 USD`;
+    document.getElementById('tasaUsdToArsDisplay').innerText = `Compra 1 USD = ${f_ars(TASA_USD_A_ARS)} ARS`;
+    document.getElementById('tasaArsToUsdDisplay').innerText = `Venta ${f_ars(TASA_ARS_A_USD)} ARS = 1 USD`;
 
     function cambiarOperacion() {
         const op = document.getElementById('mainSelector').value;
