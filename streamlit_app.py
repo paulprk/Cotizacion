@@ -5,7 +5,7 @@ import urllib.parse
 # ==========================================
 # CONFIGURACIÓN DE TASA (MODIFICA AQUÍ)
 # ==========================================
-COTIZACION_OFICIAL = 1435  # <-- Cambia este número cuando suba o baje el dólar
+COTIZACION_OFICIAL = 1445  # <-- Cambia este número cuando suba o baje el dólar
 # ==========================================
 
 # 1. Configuración de página
