@@ -40,9 +40,19 @@ st.markdown(f"<p style='text-align: center; font-size: 20px;'><b>Cotización del
 st.divider()
 
 # 4. Entradas de datos
+# 4. Entradas de datos optimizadas
 col1, col2 = st.columns(2)
+
 with col1:
-    dol = st.number_input("Monto en USD:", min_value=0.0, step=1.0, format="%.2f")
+    # Lista de valores comunes + opción personalizada
+    opciones_montos = ["50.00", "100.00", "200.00", "300.00", "400.00", "Otro monto..."]
+    seleccion = st.selectbox("Seleccione monto (USD):", opciones_montos, index=1) # Predeterminado en 100
+
+    if seleccion == "Otro monto...":
+        dol = st.number_input("Ingrese monto manual:", min_value=0.0, step=1.0, format="%.2f")
+    else:
+        dol = float(seleccion)
+
 with col2:
     comision_sel = st.radio("¿Comisión?", ["Incluida", "Aparte"])
 
