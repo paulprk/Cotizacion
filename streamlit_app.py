@@ -5,7 +5,7 @@ import urllib.parse
 # ==========================================
 # CONFIGURACIÓN DE TASA (MODIFICA AQUÍ)
 # ==========================================
-COTIZACION_OFICIAL = 1445  # <-- Cambia este número cuando suba o baje el dólar
+COTIZACION_OFICIAL = 1435  # <-- Cambia este número cuando suba o baje el dólar
 # ==========================================
 
 # 1. Configuración de página
@@ -28,7 +28,7 @@ st.markdown("""
 ahora_arg = datetime.utcnow() - timedelta(hours=3)
 ahora = ahora_arg.strftime("%d/%m/%Y %H:%M")
 
-# 3. Encabezado con el Logo (Asegúrate de tener logo.png en tu GitHub)
+# 3. Encabezado
 col_logo1, col_logo2, col_logo3 = st.columns([1,2,1])
 with col_logo2:
     try:
@@ -37,10 +37,9 @@ with col_logo2:
         st.markdown("<h1 style='text-align: center; color: #1e3799;'>🏦 ARQUI GIROS</h1>", unsafe_allow_html=True)
 
 st.markdown(f"<p style='text-align: center; font-size: 20px;'><b>Cotización del día:</b> 1 USD = {COTIZACION_OFICIAL:,} ARS</p>".replace(",", "."), unsafe_allow_html=True)
-st.write(f"<p style='text-align: center; color: gray;'>Actualizado: {ahora} (ARG)</p>", unsafe_allow_html=True)
 st.divider()
 
-# 4. Entradas de datos (Aquí el usuario SOLO ingresa monto y tipo de comisión)
+# 4. Entradas de datos
 col1, col2 = st.columns(2)
 with col1:
     dol = st.number_input("Monto en USD:", min_value=0.0, step=1.0, format="%.2f")
@@ -69,7 +68,7 @@ if dol > 0:
     def fmt(n):
         return f"{n:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-    # 6. Recibo Visual
+    # 6. Recibo Visual en pantalla
     st.markdown(f"""
     <div style="background-color: #f8f9fa; padding: 20px; border-radius: 15px; border-left: 5px solid #2ecc71; color: black;">
         <p style="margin:5px 0;"><b>Monto:</b> {fmt(dol)} USD</p>
@@ -80,8 +79,9 @@ if dol > 0:
     </div>
     """, unsafe_allow_html=True)
 
-    # 7. Mensaje de WhatsApp
+    # 7. MENSAJE DE WHATSAPP PERSONALIZADO
     mensaje = (
+        f"Hola buen día, esta es mi cotización:\n\n"
         f"*ARQUI GIROS*\n"
         f"------------------------------\n"
         f"📅 *Fecha:* {ahora}\n"
@@ -90,7 +90,8 @@ if dol > 0:
         f"💰 *RECIBIR: {fmt(monto_recibir_ars)} ARS*\n"
         f"💳 *TRANSFERIR: {fmt(monto_transferir_usd)} USD*\n"
         f"------------------------------\n"
-        f"Tasa aplicada: 1 USD = {fmt(COTIZACION_OFICIAL).replace(',00','')}"
+        f"Tasa aplicada: 1 USD = {fmt(COTIZACION_OFICIAL).replace(',00','')}\n\n"
+        f"Me ayudas con la cuenta por favor."
     )
     
     msg_encoded = urllib.parse.quote(mensaje)
@@ -100,7 +101,7 @@ if dol > 0:
     st.markdown(f'''
         <a href="{share_url}" target="_blank" style="text-decoration: none;">
             <div style="width:100%; background-color:#25D366; color:white; padding:18px; text-align:center; border-radius:12px; font-weight:bold; font-size:20px;">
-                🟢 COMPARTIR POR WHATSAPP
+                🟢 ENVIAR COTIZACIÓN POR WHATSAPP
             </div>
         </a>
     ''', unsafe_allow_html=True)
