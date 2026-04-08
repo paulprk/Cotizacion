@@ -22,7 +22,7 @@ def get_base64_image(image_path):
 img_name = "Gemini_Generated_Image_pz70wopz70wopz70.png"
 img_base64 = get_base64_image(img_name)
 
-# Estilos CSS
+# Estilos CSS (Incluye el botón de nueva cotización pequeño)
 st.markdown("""
     <style>
     .main { background-color: #ffffff; }
@@ -39,9 +39,19 @@ st.markdown("""
         color: #31333F; margin-bottom: 10px;
     }
 
+    /* Botón Calcular Principal */
     div.stButton > button:first-child {
         background-color: #1e3799; color: white; border-radius: 8px;
         height: 3em; width: 100%; font-weight: bold;
+    }
+
+    /* Botón Nueva Cotización (Pequeño y Centrado) */
+    .stButton > button[kind="secondary"] {
+        width: fit-content !important;
+        padding: 4px 15px !important;
+        font-size: 13px !important;
+        margin: 0 auto;
+        display: block;
     }
 
     .whatsapp-link { text-decoration: none; display: flex; justify-content: center; margin-top: 10px; }
@@ -67,98 +77,90 @@ else: title_html += '🏦 '
 title_html += 'Arqui Giros</div>'
 st.markdown(title_html, unsafe_allow_html=True)
 st.markdown(f'<div class="cotizacion-box">Cotización: 1 USD = {COTIZACION_OFICIAL:,} ARS</div>'.replace(",", "."), unsafe_allow_html=True)
+st.divider()
 
-# NUEVO: Selector de Modo
-st.markdown("---")
-opcion_giro = st.selectbox("¿Qué operación desea realizar?", 
-                         ["💵 Dólares a Pesos (Recibir en ARS)", "🇦🇷 Pesos a Dólares (Recibir en USD)"])
+# --- SELECTOR DE APARTADO ---
+opcion = st.selectbox("Seleccione el tipo de operación:", 
+                      ["Seleccione una opción...", "💵 Dólares a Pesos", "🇦🇷 Pesos a Dólares"])
 
-if 'calc_step' not in st.session_state:
-    st.session_state.calc_step = False
+# --- LÓGICA POR APARTADO ---
 
-# PASO 1: ENTRADA DINÁMICA
-col1, col2 = st.columns(2)
-with col1:
-    label_monto = "Monto en USD:" if "Dólares a Pesos" in opcion_giro else "Monto en ARS:"
-    monto_texto = st.text_input(label_monto, value="100.00", disabled=st.session_state.calc_step)
-    try: monto_usr = float(monto_texto.replace(",", "."))
-    except ValueError: monto_usr = 0.0
+if opcion == "💵 Dólares a Pesos":
+    # --- TODO TU CÓDIGO PERFECCIONADO AQUÍ ---
+    if 'calc_step' not in st.session_state:
+        st.session_state.calc_step = False
 
-with col2:
-    comision_sel = st.radio("Comisión", ["Incluida", "Aparte"], disabled=st.session_state.calc_step)
-    text_com_help = "Se descuenta del total" if comision_sel == "Incluida" else "Se suma al total"
-    st.markdown(f'<p class="comision-info">{text_com_help}</p>', unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        monto_texto = st.text_input("Monto en USD:", value="100.00", disabled=st.session_state.calc_step)
+        try: dol = float(monto_texto.replace(",", "."))
+        except ValueError: dol = 0.0
+    with col2:
+        comision_sel = st.radio("Comisión", ["Incluida", "Aparte"], disabled=st.session_state.calc_step)
+        text_com = "Se descuenta del monto" if comision_sel == "Incluida" else "Se suma al valor"
+        st.markdown(f'<p class="comision-info">{text_com}</p>', unsafe_allow_html=True)
 
-if not st.session_state.calc_step:
-    if st.button("🚀 CALCULAR COTIZACIÓN"):
-        if monto_usr > 0:
-            st.session_state.calc_step = True
+    if not st.session_state.calc_step:
+        if st.button("🚀 CALCULAR COTIZACIÓN"):
+            if dol > 0:
+                st.session_state.calc_step = True
+                st.rerun()
+
+    if st.session_state.calc_step:
+        com_final = 1.5 if dol <= 60 else int(dol * 0.025 * 100) / 100
+        if comision_sel == "Incluida":
+            recibir = round((dol - com_final) * COTIZACION_OFICIAL)
+            transferir = dol
+        else:
+            recibir = round(dol * COTIZACION_OFICIAL)
+            transferir = dol + com_final
+
+        def f_ars(n): return f"{int(n):,}".replace(",", ".")
+        def f_usd(n): return f"{n:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+        st.markdown(f"""
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 12px; border-left: 5px solid #2ecc71; color: black; margin-bottom: 20px; text-align:center;">
+            <h2 style="color: #27ae60; margin:0;">RECIBIR: {f_ars(recibir)} ARS</h2>
+            <p style="margin:5px 0; font-size:14px;">Monto: {f_usd(dol)} USD | Comisión: {com_final:.2f} USD</p>
+            <p style="color: #e67e22; margin:0; font-weight:bold;">Transferir: {f_usd(transferir)} USD</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("### 📝 Datos de Destino")
+        banco_sel = st.selectbox("Banco remitente:", ["Banco Pichincha", "Banco Guayaquil", "Banco Pacífico", "Banco Bolivariano", "Banco Internacional", "Otro"])
+        if banco_sel == "Otro":
+            banco_final = f"Banco {st.text_input('Especifique banco:', placeholder='Ej. Produbanco')}"
+        else: banco_final = banco_sel
+
+        c1, c2 = st.columns(2)
+        with c1: cvu = st.text_input("CBU/CVU o Alias:", placeholder="Ingrese información")
+        with c2: nombre = st.text_input("Nombre y Apellido:", placeholder="Ingrese nombre")
+
+        ws_icon_url = "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+        msg = urllib.parse.quote(f"Hola, mi cotización Arqui Giros:\n\n*Recibir:* {f_ars(recibir)} ARS\n*Banco:* {banco_final}\n*Destino:* {nombre.upper()}\n*CBU:* {cvu}\n\nAyúdame con la cuenta.")
+        
+        if cvu and nombre:
+            st.markdown(f'<div class="whatsapp-link"><a href="https://api.whatsapp.com/send?text={msg}" target="_blank" class="btn-ws bg-active"><img src="{ws_icon_url}" class="ws-icon"> Compartir a WhatsApp</a></div>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'''
+                <div class="whatsapp-link" style="flex-direction: column; align-items: center;">
+                    <div class="btn-ws bg-inactive"><img src="{ws_icon_url}" class="ws-icon" style="filter:grayscale(1)"> Compartir a WhatsApp</div>
+                    <p style="color: #ff4b4b; font-size: 13px; margin-top: 8px; font-weight: bold; text-align: center;">⚠️ Complete los datos para compartir a WhatsApp</p>
+                </div>''', unsafe_allow_html=True)
+
+        st.write("")
+        if st.button("🔄 NUEVA COTIZACIÓN"):
+            st.session_state.calc_step = False
             st.rerun()
 
-# PASO 2: CÁLCULOS DINÁMICOS
-if st.session_state.calc_step:
-    # 1. Calculamos los valores base según el sentido
-    if "Dólares a Pesos" in opcion_giro:
-        usd_base = monto_usr
-        com_final = 1.5 if usd_base <= 60 else int(usd_base * 0.025 * 100) / 100
-        if comision_sel == "Incluida":
-            recibir = round((usd_base - com_final) * COTIZACION_OFICIAL)
-            transferir = usd_base
-            txt_res = f"RECIBIR: {recibir:,} ARS".replace(",", ".")
-            txt_det = f"Monto: {usd_base:.2f} USD | Comisión: {com_final:.2f} USD"
-            txt_tra = f"Transferir: {usd_base:.2f} USD"
-        else:
-            recibir = round(usd_base * COTIZACION_OFICIAL)
-            transferir = usd_base + com_final
-            txt_res = f"RECIBIR: {recibir:,} ARS".replace(",", ".")
-            txt_det = f"Monto: {usd_base:.2f} USD | Comisión: {com_final:.2f} USD"
-            txt_tra = f"Transferir: {transferir:.2f} USD"
-    else:
-        # Lógica Pesos a Dólares
-        ars_base = monto_usr
-        usd_equivalente = ars_base / COTIZACION_OFICIAL
-        com_final = 1.5 if usd_equivalente <= 60 else int(usd_equivalente * 0.025 * 100) / 100
-        
-        if comision_sel == "Incluida":
-            recibir_usd = usd_equivalente - com_final
-            transferir_ars = ars_base
-            txt_res = f"RECIBIR: {recibir_usd:.2f} USD"
-            txt_det = f"Monto: {ars_base:,} ARS | Comisión: {com_final:.2f} USD".replace(",", ".")
-            txt_tra = f"Transferir: {ars_base:,} ARS".replace(",", ".")
-        else:
-            recibir_usd = usd_equivalente
-            transferir_ars = ars_base + (com_final * COTIZACION_OFICIAL)
-            txt_res = f"RECIBIR: {recibir_usd:.2f} USD"
-            txt_det = f"Monto: {ars_base:,} ARS | Comisión: {com_final:.2f} USD".replace(",", ".")
-            txt_tra = f"Transferir: {round(transferir_ars):,} ARS".replace(",", ".")
+elif opcion == "🇦🇷 Pesos a Dólares":
+    # --- APARTADO EN BLANCO ---
+    st.info("🔄 Este apartado estará disponible próximamente.")
+    st.write("Estamos trabajando para ofrecerte la mejor tasa de cambio de Pesos a Dólares.")
 
-    # Mostrar Resultado
-    st.markdown(f"""
-    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 12px; border-left: 5px solid #2ecc71; color: black; margin-bottom: 20px; text-align:center;">
-        <h2 style="color: #27ae60; margin:0;">{txt_res}</h2>
-        <p style="margin:5px 0; font-size:14px;">{txt_det}</p>
-        <p style="color: #e67e22; margin:0; font-weight:bold;">{txt_tra}</p>
-    </div>
-    """, unsafe_allow_html=True)
+else:
+    # --- PANTALLA DE BIENVENIDA ---
+    st.write("👋 ¡Bienvenido! Por favor, selecciona arriba qué tipo de cambio deseas realizar para comenzar.")
 
-    # Datos de destino (se mantienen igual)
-    st.markdown("### 📝 Datos de Destino")
-    banco_sel = st.selectbox("Banco remitente:", ["Banco Pichincha", "Banco Guayaquil", "Banco Pacífico", "Otro"])
-    banco_final = f"Banco {st.text_input('Especifique:')}" if banco_sel == "Otro" else banco_sel
-    c1, c2 = st.columns(2)
-    with c1: cvu = st.text_input("CBU/CVU o Alias:")
-    with c2: nombre = st.text_input("Nombre y Apellido:")
-
-    # WhatsApp Mensaje Dinámico
-    ws_icon_url = "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
-    msg_txt = f"Hola, cotización Arqui Giros ({opcion_giro}):\n\n*Resultado:* {txt_res}\n*Banco:* {banco_final}\n*Destino:* {nombre.upper()}\n*CBU:* {cvu}"
-    msg = urllib.parse.quote(msg_txt)
-    
-    if cvu and nombre:
-        st.markdown(f'<div class="whatsapp-link"><a href="https://api.whatsapp.com/send?text={msg}" target="_blank" class="btn-ws bg-active"><img src="{ws_icon_url}" class="ws-icon"> Compartir a WhatsApp</a></div>', unsafe_allow_html=True)
-    else:
-        st.markdown(f'<div class="whatsapp-link" style="flex-direction: column; align-items: center;"><div class="btn-ws bg-inactive"><img src="{ws_icon_url}" class="ws-icon" style="filter:grayscale(1)"> Compartir a WhatsApp</div><p style="color: #ff4b4b; font-size: 13px; margin-top: 8px; font-weight: bold;">⚠️ Complete los datos para compartir</p></div>', unsafe_allow_html=True)
-
-    if st.button("🔄 NUEVA COTIZACIÓN"):
-        st.session_state.calc_step = False
-        st.rerun()
+st.divider()
+st.caption("AL REALIZAR UN GIRO SE DA POR LEÍDO LOS T&C")
