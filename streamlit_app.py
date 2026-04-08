@@ -5,9 +5,10 @@ import base64
 import os
 
 # ==========================================
-# CONFIGURACIÓN DE TASA (MODIFICA AQUÍ)
+# CONFIGURACIÓN DE TASAS (MODIFICA AQUÍ)
 # ==========================================
-COTIZACION_OFICIAL = 1445
+TASA_USD_A_ARS = 1445  # Lo que recibe el cliente en ARS
+TASA_ARS_A_USD = 1505  # Lo que debe entregar el cliente en ARS
 # ==========================================
 
 st.set_page_config(page_title="Arqui Giros - Oficial", page_icon="💸")
@@ -22,7 +23,7 @@ def get_base64_image(image_path):
 img_name = "Gemini_Generated_Image_pz70wopz70wopz70.png"
 img_base64 = get_base64_image(img_name)
 
-# Estilos CSS (Incluye el botón de nueva cotización pequeño)
+# Estilos CSS
 st.markdown("""
     <style>
     .main { background-color: #ffffff; }
@@ -34,24 +35,28 @@ st.markdown("""
     }
     .title-logo { height: 30px; width: auto; }
 
-    .cotizacion-box {
-        text-align: center; width: 100%; font-size: 18px; font-weight: bold;
-        color: #31333F; margin-bottom: 10px;
+    /* Caja de Cotizaciones Dual */
+    .cotizacion-container {
+        text-align: center;
+        width: 100%;
+        margin-bottom: 20px;
     }
 
-    /* Botón Calcular Principal */
+    .cotizacion-box {
+        font-size: 18px;
+        font-weight: bold;
+        color: #31333F;
+        margin: 2px 0;
+    }
+
     div.stButton > button:first-child {
         background-color: #1e3799; color: white; border-radius: 8px;
         height: 3em; width: 100%; font-weight: bold;
     }
 
-    /* Botón Nueva Cotización (Pequeño y Centrado) */
     .stButton > button[kind="secondary"] {
-        width: fit-content !important;
-        padding: 4px 15px !important;
-        font-size: 13px !important;
-        margin: 0 auto;
-        display: block;
+        width: fit-content !important; padding: 4px 15px !important;
+        font-size: 13px !important; margin: 0 auto; display: block;
     }
 
     .whatsapp-link { text-decoration: none; display: flex; justify-content: center; margin-top: 10px; }
@@ -76,17 +81,22 @@ if img_base64: title_html += f'<img src="data:image/png;base64,{img_base64}" cla
 else: title_html += '🏦 '
 title_html += 'Arqui Giros</div>'
 st.markdown(title_html, unsafe_allow_html=True)
-st.markdown(f'<div class="cotizacion-box">Cotización: 1 USD = {COTIZACION_OFICIAL:,} ARS</div>'.replace(",", "."), unsafe_allow_html=True)
+
+# Mostrar Doble Cotización
+st.markdown(f"""
+    <div class="cotizacion-container">
+        <div class="cotizacion-box">Cotización: 1 USD = {TASA_USD_A_ARS:,} ARS</div>
+        <div class="cotizacion-box">{TASA_ARS_A_USD:,} ARS = 1 USD</div>
+    </div>
+    """.replace(",", "."), unsafe_allow_html=True)
+
 st.divider()
 
 # --- SELECTOR DE APARTADO ---
 opcion = st.selectbox("Seleccione el tipo de operación:", 
                       ["Seleccione una opción...", "💵 Dólares a Pesos", "🇦🇷 Pesos a Dólares"])
 
-# --- LÓGICA POR APARTADO ---
-
 if opcion == "💵 Dólares a Pesos":
-    # --- TODO TU CÓDIGO PERFECCIONADO AQUÍ ---
     if 'calc_step' not in st.session_state:
         st.session_state.calc_step = False
 
@@ -109,10 +119,10 @@ if opcion == "💵 Dólares a Pesos":
     if st.session_state.calc_step:
         com_final = 1.5 if dol <= 60 else int(dol * 0.025 * 100) / 100
         if comision_sel == "Incluida":
-            recibir = round((dol - com_final) * COTIZACION_OFICIAL)
+            recibir = round((dol - com_final) * TASA_USD_A_ARS)
             transferir = dol
         else:
-            recibir = round(dol * COTIZACION_OFICIAL)
+            recibir = round(dol * TASA_USD_A_ARS)
             transferir = dol + com_final
 
         def f_ars(n): return f"{int(n):,}".replace(",", ".")
@@ -145,7 +155,9 @@ if opcion == "💵 Dólares a Pesos":
             st.markdown(f'''
                 <div class="whatsapp-link" style="flex-direction: column; align-items: center;">
                     <div class="btn-ws bg-inactive"><img src="{ws_icon_url}" class="ws-icon" style="filter:grayscale(1)"> Compartir a WhatsApp</div>
-                    <p style="color: #ff4b4b; font-size: 13px; margin-top: 8px; font-weight: bold; text-align: center;">⚠️ Complete los datos para compartir a WhatsApp</p>
+                    <p style="color: #ff4b4b; font-size: 13px; margin-top: 8px; font-weight: bold; text-align: center;">
+                        ⚠️ Complete los datos para compartir a WhatsApp
+                    </p>
                 </div>''', unsafe_allow_html=True)
 
         st.write("")
@@ -154,12 +166,9 @@ if opcion == "💵 Dólares a Pesos":
             st.rerun()
 
 elif opcion == "🇦🇷 Pesos a Dólares":
-    # --- APARTADO EN BLANCO ---
     st.info("🔄 Este apartado estará disponible próximamente.")
-    st.write("Estamos trabajando para ofrecerte la mejor tasa de cambio de Pesos a Dólares.")
 
 else:
-    # --- PANTALLA DE BIENVENIDA ---
     st.write("👋 ¡Bienvenido! Por favor, selecciona arriba qué tipo de cambio deseas realizar para comenzar.")
 
 st.divider()
