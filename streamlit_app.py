@@ -254,22 +254,32 @@ elif opcion == "🇦🇷 Pesos a Dólares":
         
         nom_ape = st.text_input("Nombre y Apellido del beneficiario:", placeholder="Nombre completo")
 
-        # WHATSAPP (CORREGIDO SIN VARIABLES INEXISTENTES)
+        # WHATSAPP (CORREGIDO CON EMOJIS Y HORA DE ARGENTINA)
         ws_url = "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
         
-        # Armamos el mensaje de texto puro primero para evitar errores de llaves
+        # 1. Obtenemos la fecha y hora de Argentina (UTC -3)
+        hora_argentina = datetime.utcnow() - timedelta(hours=3)
+        fecha_actual_ars = hora_argentina.strftime("%d/%m/%Y %H:%M")
+        
+        # 2. Armamos el mensaje de texto puro con emojis y formato visual
         texto_mensaje = (
-            f"Hola Arqui Giros, cotización ARS a USD:\n\n"
-            f"*Entregar:* {f_ars(pagar_final)} ARS\n"
-            f"*Recibir:* {f_usd(recibir_final)} USD\n"
-            f"--------------------------\n"
-            f"*DATOS DESTINO:*\n"
-            f"*Banco:* {banco_f}\n"
-            f"*Cuenta:* {tipo_cta} - {n_cta}\n"
-            f"*Cédula:* {cedula}\n"
-            f"*Nombre:* {nom_ape.upper()}\n\n"
+            f"Hola Arqui Giros, cotización ARS a USD:\n"
+            f"------------------------------\n"
+            f"📅 Fecha: {fecha_actual_ars}\n"
+            f"🏦 Banco: {banco_f}\n\n"
+            f"💵 ENTREGAR: {f_ars(pagar_final)} ARS\n"
+            f"💰 RECIBIR: {f_usd(recibir_final)} USD\n\n"
+            f"------------------------------\n"
+            f"DATOS DE DESTINO:\n"
+            f"👤 Nombre: {nom_ape.upper()}\n"
+            f"🆔 Cédula: {cedula}\n"
+            f"💳 Cuenta: {tipo_cta} - {n_cta}\n"
+            f"------------------------------\n"
+            f"Tasa aplicada: {f_ars(TASA_ARS_A_USD)} ARS = 1 USD\n\n"
             f"Me confirmas para enviarte los pesos."
         )
+        
+        # 3. Codificamos el mensaje para la URL de WhatsApp
         msg_ars = urllib.parse.quote(texto_mensaje)
 
         if n_cta and cedula and nom_ape:
