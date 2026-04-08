@@ -80,19 +80,15 @@ st.markdown("""
 ahora_arg = datetime.utcnow() - timedelta(hours=3)
 ahora = ahora_arg.strftime("%d/%m/%Y %H:%M")
 
-# Encabezado
+# Encabezado (Actualizado con tu nueva imagen redonda)
 col_logo1, col_logo2, col_logo3 = st.columns([1,2,1])
 with col_logo2:
     try:
-        st.image("logo.png", width=200)
+        # Usamos exactamente el nombre de tu archivo
+        st.image("Gemini_Generated_Image_pz70wopz70wopz70.png", width=220)
     except:
+        # Si por alguna razón no carga, mostramos el texto de respaldo
         st.markdown("<h1 style='text-align: center; color: #1e3799;'>🏦 ARQUI GIROS</h1>", unsafe_allow_html=True)
-
-st.markdown(f"<p style='text-align: center; font-size: 20px;'><b>Cotización:</b> 1 USD = {COTIZACION_OFICIAL:,} ARS</p>".replace(",", "."), unsafe_allow_html=True)
-st.divider()
-
-if 'calc_step' not in st.session_state:
-    st.session_state.calc_step = False
 
 # PASO 1: ENTRADA BÁSICA
 col1, col2 = st.columns(2)
