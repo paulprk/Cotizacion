@@ -12,19 +12,15 @@ COTIZACION_OFICIAL = 1445
 
 st.set_page_config(page_title="Arqui Giros - Oficial", page_icon="💸")
 
-# --- FUNCIÓN PARA CARGAR IMAGEN COMO BASE64 ---
-# Esto es necesario para incrustar la imagen dentro del HTML del título
+# --- FUNCIÓN PARA CARGAR IMAGEN ---
 def get_base64_image(image_path):
     if os.path.exists(image_path):
         with open(image_path, "rb") as img_file:
             return base64.b64encode(img_file.read()).decode()
     return None
 
-# Intentamos cargar la imagen con tu nombre largo o el corto
-# CAMBIA ESTO si renombras tu imagen en GitHub
+# Ruta de tu logo
 img_name = "Gemini_Generated_Image_pz70wopz70wopz70.png"
-# img_name = "logo.png" # Si la renombras, usa esta línea y comenta la de arriba
-
 img_base64 = get_base64_image(img_name)
 
 # Estilos CSS
@@ -33,33 +29,26 @@ st.markdown("""
     .main { background-color: #ffffff; }
     .stRadio > div { flex-direction: row; justify-content: center; }
     
-    /* Estilo del Título Integrado (Logo + Texto) */
+    /* Título con Logo Integrado */
     .arqui-title {
         text-align: center;
         color: #1e3799;
         font-weight: bold;
-        font-size: 36px; /* Tamaño del título principal */
+        font-size: 30px;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 15px; /* Espacio entre logo y texto */
+        gap: 10px;
         margin-bottom: 5px;
     }
+    .title-logo { height: 30px; width: auto; }
 
-    /* Estilo para el Logo dentro del Título (Mismo tamaño que texto) */
-    .title-logo {
-        height: 36px; /* Mismo height que el font-size del título */
-        width: auto;
-    }
-
-    /* Estilo para el Texto de Cotización Centrado */
     .cotizacion-box {
         text-align: center;
         width: 100%;
-        font-size: 20px;
+        font-size: 18px;
         font-weight: bold;
         color: #31333F;
-        margin-top: -5px;
         margin-bottom: 20px;
     }
 
@@ -67,55 +56,46 @@ st.markdown("""
     div.stButton > button:first-child {
         background-color: #1e3799;
         color: white;
-        border-radius: 10px;
+        border-radius: 8px;
         height: 3em;
         width: 100%;
         font-weight: bold;
     }
 
-    /* Botón WhatsApp - Rectangular y Compacto (Anti-errores Android) */
-    .whatsapp-btn-active {
-        background-color: #25D366;
-        color: white !important;
-        padding: 8px 16px;
-        text-align: center;
-        border-radius: 8px; /* Rectangular suavizado */
-        font-weight: 600;
-        font-size: 14px;
+    /* BOTÓN WHATSAPP RECTANGULAR Y COMPACTO */
+    .whatsapp-link {
         text-decoration: none;
-        display: inline-flex;
-        align-items: center;
+        display: flex;
         justify-content: center;
-        gap: 8px;
-        box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
-        border: none;
+        margin-top: 10px;
     }
 
-    .whatsapp-btn-inactive {
-        background-color: #e0e0e0;
-        color: #888888 !important;
-        padding: 8px 16px;
-        text-align: center;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 14px;
-        text-decoration: none;
-        display: inline-flex;
+    .btn-ws {
+        display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        pointer-events: none;
+        padding: 6px 15px; /* Altura mínima para que sea rectangular y fino */
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 14px;
+        color: white !important;
+        width: fit-content; /* Se adapta al texto, no tosco */
+        min-width: 200px;
+        box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
     }
+
+    .bg-active { background-color: #25D366; }
+    .bg-inactive { background-color: #e0e0e0; color: #888888 !important; pointer-events: none; }
+
+    .ws-icon { height: 16px; width: auto; } /* Tamaño micro igual al texto */
     
-    .whatsapp-btn img { width: 18px; height: 18px; }
     input { text-align: center; }
-    
     .comision-info {
         text-align: center;
-        font-size: 13px;
+        font-size: 12px;
         color: #666;
         margin-top: -10px;
-        margin-bottom: 10px;
         font-style: italic;
     }
     </style>
@@ -124,138 +104,90 @@ st.markdown("""
 ahora_arg = datetime.utcnow() - timedelta(hours=3)
 ahora = ahora_arg.strftime("%d/%m/%Y %H:%M")
 
-# --- ENCABEZADO INTEGRADO (Logo + Texto) ---
-# Creamos el HTML dinámico para el título
+# --- ENCABEZADO ---
 title_html = '<div class="arqui-title">'
 if img_base64:
-    # Si la imagen existe, la insertamos como Base64
     title_html += f'<img src="data:image/png;base64,{img_base64}" class="title-logo">'
-else:
-    # Si no, mostramos el emoji original como respaldo
-    title_html += '🏦 '
+else: title_html += '🏦 '
 title_html += 'Arqui Giros</div>'
 
-# Mostramos el título integrado
 st.markdown(title_html, unsafe_allow_html=True)
-
-# Texto de cotización centrado justo debajo
 st.markdown(f'<div class="cotizacion-box">Cotización: 1 USD = {COTIZACION_OFICIAL:,} ARS</div>'.replace(",", "."), unsafe_allow_html=True)
-
 st.divider()
 
 if 'calc_step' not in st.session_state:
     st.session_state.calc_step = False
 
-# PASO 1: ENTRADA BÁSICA
+# PASO 1
 col1, col2 = st.columns(2)
 with col1:
     monto_texto = st.text_input("Monto en USD:", value="100.00", disabled=st.session_state.calc_step)
-    try:
-        dol = float(monto_texto.replace(",", "."))
-    except ValueError:
-        dol = 0.0
+    try: dol = float(monto_texto.replace(",", "."))
+    except ValueError: dol = 0.0
 with col2:
     comision_sel = st.radio("Comisión", ["Incluida", "Aparte"], disabled=st.session_state.calc_step)
-    if comision_sel == "Incluida":
-        st.markdown('<p class="comision-info">Se descuenta del monto enviado</p>', unsafe_allow_html=True)
-    else:
-        st.markdown('<p class="comision-info">Se suma al valor a enviar</p>', unsafe_allow_html=True)
+    text_com = "Se descuenta del monto" if comision_sel == "Incluida" else "Se suma al valor"
+    st.markdown(f'<p class="comision-info">{text_com}</p>', unsafe_allow_html=True)
 
 if not st.session_state.calc_step:
     if st.button("🚀 CALCULAR COTIZACIÓN"):
         if dol > 0:
             st.session_state.calc_step = True
             st.rerun()
-        else:
-            st.error("Ingrese un monto válido.")
 
-# PASO 2: MOSTRAR RESULTADO Y PEDIR DATOS EXTRAS
+# PASO 2
 if st.session_state.calc_step:
-    MENOS_60 = 1.5
-    MAS_60 = 0.025
-    com_final = MENOS_60 if dol <= 60 else int(dol * MAS_60 * 100) / 100
-
+    com_final = 1.5 if dol <= 60 else int(dol * 0.025 * 100) / 100
     if comision_sel == "Incluida":
-        monto_recibir_ars = round((dol - com_final) * COTIZACION_OFICIAL)
-        monto_transferir_usd = dol
-        txt_com = f"{com_final:.2f} USD (Incluida)"
+        recibir = round((dol - com_final) * COTIZACION_OFICIAL)
+        transferir = dol
     else:
-        monto_recibir_ars = round(dol * COTIZACION_OFICIAL)
-        monto_transferir_usd = dol + com_final
-        txt_com = f"{com_final:.2f} USD (Aparte)"
+        recibir = round(dol * COTIZACION_OFICIAL)
+        transferir = dol + com_final
 
-    def fmt_ars(n): return f"{int(n):,}".replace(",", ".")
-    def fmt_usd(n): return f"{n:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    def f_ars(n): return f"{int(n):,}".replace(",", ".")
+    def f_usd(n): return f"{n:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
     st.markdown(f"""
-    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 15px; border-left: 5px solid #2ecc71; color: black; margin-bottom: 20px;">
-        <h2 style="color: #27ae60; margin:0; text-align: center;">RECIBIR: {fmt_ars(monto_recibir_ars)} ARS</h2>
-        <p style="margin:5px 0; text-align: center;">Monto: {fmt_usd(dol)} USD | Comisión: {txt_com}</p>
-        <p style="color: #e67e22; margin:0; font-weight:bold; text-align: center;">Transferir: {fmt_usd(monto_transferir_usd)} USD</p>
+    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 12px; border-left: 5px solid #2ecc71; color: black; margin-bottom: 20px; text-align:center;">
+        <h2 style="color: #27ae60; margin:0;">RECIBIR: {f_ars(recibir)} ARS</h2>
+        <p style="margin:5px 0; font-size:14px;">Monto: {f_usd(dol)} USD | Comisión: {com_final:.2f} USD</p>
+        <p style="color: #e67e22; margin:0; font-weight:bold;">Transferir: {f_usd(transferir)} USD</p>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("### 📝 Datos para el Recibo")
-    bancos_lista = ["Banco Pichincha", "Banco Guayaquil", "Banco Pacífico", "Banco Bolivariano", "Banco Internacional", "Otro"]
-    banco_sel = st.selectbox("Seleccione su banco remitente:", bancos_lista)
-    
-    banco_final = banco_sel
+    st.markdown("### 📝 Datos de Destino")
+    banco_sel = st.selectbox("Banco remitente:", ["Banco Pichincha", "Banco Guayaquil", "Banco Pacífico", "Banco Bolivariano", "Banco Internacional", "Otro"])
     if banco_sel == "Otro":
-        otro_banco = st.text_input("Especifique su banco:", placeholder="Ej. Produbanco")
-        banco_final = f"Banco {otro_banco}" if otro_banco else "Otro Banco"
+        banco_final = f"Banco {st.text_input('Especifique banco:', placeholder='Ej. Produbanco')}"
+    else: banco_final = banco_sel
 
-    c_cta1, c_cta2 = st.columns(2)
-    with c_cta1:
-        cvu_cbu = st.text_input("Ingrese su CVU/CBU o Alias:", placeholder="Ingrese Información")
-    with c_cta2:
-        nombre_titular = st.text_input("Ingrese nombre y apellido:", placeholder="Ingrese su Nombre y Apellido")
+    c1, c2 = st.columns(2)
+    with c1: cvu = st.text_input("CBU/CVU o Alias:", placeholder="Ingrese información")
+    with c2: nombre = st.text_input("Nombre y Apellido:", placeholder="Ingrese nombre")
 
-    datos_completos = cvu_cbu.strip() != "" and nombre_titular.strip() != ""
+    # WHATSAPP COMPACTO
+    ws_icon_url = "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+    msg = urllib.parse.quote(f"Hola, mi cotización Arqui Giros:\n\n*Recibir:* {f_ars(recibir)} ARS\n*Banco:* {banco_final}\n*Destino:* {nombre.upper()}\n*CBU:* {cvu}\n\nAyúdame con la cuenta.")
     
-    mensaje = (
-        f"Hola buen día, esta es mi cotización:\n\n"
-        f"*ARQUI GIROS*\n"
-        f"------------------------------\n"
-        f"📅 *Fecha:* {ahora}\n"
-        f"🏦 *Banco:* {banco_final}\n\n"
-        f"💵 *Monto:* {fmt_usd(dol)} USD\n"
-        f"⚙️ *Comisión:* {txt_com}\n"
-        f"💰 *RECIBIR: {fmt_ars(monto_recibir_ars)} ARS*\n"
-        f"💳 *TRANSFERIR: {fmt_usd(monto_transferir_usd)} USD*\n\n"
-        f"------------------------------\n"
-        f"*DATOS DE DESTINO:*\n"
-        f"👤 *Nombre:* {nombre_titular.upper()}\n"
-        f"🔑 *CBU/CVU/Alias:* {cvu_cbu}\n"
-        f"------------------------------\n"
-        f"Tasa aplicada: 1 USD = {int(COTIZACION_OFICIAL):,}\n\n".replace(",", ".") +
-        f"Me ayudas con la cuenta por favor."
-    )
-    
-    msg_encoded = urllib.parse.quote(mensaje)
-    share_url = f"https://api.whatsapp.com/send?text={msg_encoded}"
-
-    # Botón centrado y ajustado
-    st.markdown('<div style="text-align: center;">', unsafe_allow_html=True)
-    if datos_completos:
+    if cvu and nombre:
         st.markdown(f'''
-            <a href="{share_url}" target="_blank" class="whatsapp-btn-active">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
-                Enviar WhatsApp
-            </a>
+            <div class="whatsapp-link">
+                <a href="https://api.whatsapp.com/send?text={msg}" target="_blank" class="btn-ws bg-active">
+                    <img src="{ws_icon_url}" class="ws-icon"> Compartir a WhatsApp
+                </a>
+            </div>
             ''', unsafe_allow_html=True)
     else:
         st.markdown(f'''
-            <div class="whatsapp-btn-inactive">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="filter: grayscale(1);">
-                Completar datos
+            <div class="whatsapp-link">
+                <div class="btn-ws bg-inactive">
+                    <img src="{ws_icon_url}" class="ws-icon" style="filter:grayscale(1)"> Complete datos
+                </div>
             </div>
             ''', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
     st.write("")
-    if st.button("🔄 REALIZAR NUEVA COTIZACIÓN"):
+    if st.button("🔄 NUEVA COTIZACIÓN"):
         st.session_state.calc_step = False
         st.rerun()
-
-st.divider()
-st.caption("AL REALIZAR UN GIRO SE DA POR LEÍDO LOS T&C")
