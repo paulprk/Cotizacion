@@ -10,6 +10,7 @@ COTIZACION_OFICIAL = 1445
 
 st.set_page_config(page_title="Arqui Giros - Oficial", page_icon="💸")
 
+# Estilos CSS
 st.markdown("""
     <style>
     .main { background-color: #ffffff; }
@@ -25,47 +26,43 @@ st.markdown("""
         font-weight: bold;
     }
 
-    /* Botón WhatsApp - Versión Estilizada y Compacta */
+    /* Botón WhatsApp - Rectangular y Compacto (Anti-errores Android) */
     .whatsapp-btn-active {
         background-color: #25D366;
         color: white !important;
-        padding: 10px 20px;
+        padding: 8px 16px; /* Menos espacio para que no sea tosco */
         text-align: center;
-        border-radius: 30px;
+        border-radius: 8px; /* Rectangular con puntas suavizadas */
         font-weight: 600;
-        font-size: 16px;
+        font-size: 14px; /* Tamaño de letra más seguro para móviles */
         text-decoration: none;
-        display: flex;
+        display: inline-flex; /* Se adapta al texto */
         align-items: center;
         justify-content: center;
         gap: 8px;
-        box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
-        width: fit-content;
-        margin: 10px auto;
+        box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+        border: none;
     }
 
     .whatsapp-btn-inactive {
         background-color: #e0e0e0;
         color: #888888 !important;
-        padding: 10px 20px;
+        padding: 8px 16px;
         text-align: center;
-        border-radius: 30px;
+        border-radius: 8px;
         font-weight: 600;
-        font-size: 16px;
+        font-size: 14px;
         text-decoration: none;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        width: fit-content;
-        margin: 10px auto;
         pointer-events: none;
     }
     
-    .whatsapp-btn img { width: 20px; height: 20px; }
+    .whatsapp-btn img { width: 18px; height: 18px; }
     input { text-align: center; }
     
-    /* Estilo para las explicaciones de comisión */
     .comision-info {
         text-align: center;
         font-size: 13px;
@@ -80,15 +77,23 @@ st.markdown("""
 ahora_arg = datetime.utcnow() - timedelta(hours=3)
 ahora = ahora_arg.strftime("%d/%m/%Y %H:%M")
 
-# Encabezado (Actualizado con tu nueva imagen redonda)
+# 3. Encabezado con el Logo
 col_logo1, col_logo2, col_logo3 = st.columns([1,2,1])
 with col_logo2:
     try:
-        # Usamos exactamente el nombre de tu archivo
+        # Intenta cargar con el nombre largo, si falla intenta con logo.png
         st.image("Gemini_Generated_Image_pz70wopz70wopz70.png", width=220)
     except:
-        # Si por alguna razón no carga, mostramos el texto de respaldo
-        st.markdown("<h1 style='text-align: center; color: #1e3799;'>🏦 ARQUI GIROS</h1>", unsafe_allow_html=True)
+        try:
+            st.image("logo.png", width=220)
+        except:
+            st.markdown("<h1 style='text-align: center; color: #1e3799;'>🏦 ARQUI GIROS</h1>", unsafe_allow_html=True)
+
+st.markdown(f"<p style='text-align: center; font-size: 20px;'><b>Cotización:</b> 1 USD = {COTIZACION_OFICIAL:,} ARS</p>".replace(",", "."), unsafe_allow_html=True)
+st.divider()
+
+if 'calc_step' not in st.session_state:
+    st.session_state.calc_step = False
 
 # PASO 1: ENTRADA BÁSICA
 col1, col2 = st.columns(2)
@@ -100,7 +105,6 @@ with col1:
         dol = 0.0
 with col2:
     comision_sel = st.radio("Comisión", ["Incluida", "Aparte"], disabled=st.session_state.calc_step)
-    # Aclaración dinámica de comisión
     if comision_sel == "Incluida":
         st.markdown('<p class="comision-info">Se descuenta del monto enviado</p>', unsafe_allow_html=True)
     else:
@@ -179,25 +183,23 @@ if st.session_state.calc_step:
     msg_encoded = urllib.parse.quote(mensaje)
     share_url = f"https://api.whatsapp.com/send?text={msg_encoded}"
 
+    # Botón centrado y ajustado
+    st.markdown('<div style="text-align: center;">', unsafe_allow_html=True)
     if datos_completos:
         st.markdown(f'''
-            <div style="text-align: center;">
-                <a href="{share_url}" target="_blank" class="whatsapp-btn-active">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
-                    ENVIAR POR WHATSAPP
-                </a>
-            </div>
+            <a href="{share_url}" target="_blank" class="whatsapp-btn-active">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
+                Enviar WhatsApp
+            </a>
             ''', unsafe_allow_html=True)
     else:
         st.markdown(f'''
-            <div style="text-align: center;">
-                <div class="whatsapp-btn-inactive">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="filter: grayscale(1);">
-                    COMPLETE DATOS PARA ENVIAR
-                </div>
+            <div class="whatsapp-btn-inactive">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="filter: grayscale(1);">
+                Completar datos
             </div>
             ''', unsafe_allow_html=True)
-        st.caption("<p style='text-align: center;'>⚠️ Por favor complete el CBU y Nombre.</p>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
     st.write("")
     if st.button("🔄 REALIZAR NUEVA COTIZACIÓN"):
