@@ -16,14 +16,13 @@ st.markdown("""
     .main { background-color: #ffffff; }
     .stRadio > div { flex-direction: row; justify-content: center; }
     
-    /* Centrado del encabezado (Logo y Cotización) */
-    .header-container {
+    /* BLOQUE DE ENCABEZADO CENTRADO (SIN COLUMNAS) */
+    .super-center-header {
         text-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
         width: 100%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
         margin-bottom: 20px;
     }
 
@@ -31,8 +30,9 @@ st.markdown("""
         font-size: 20px;
         font-weight: bold;
         color: #31333F;
-        margin-top: 10px;
+        margin-top: 15px; /* Espacio justo entre logo y texto */
         text-align: center;
+        display: block;
     }
 
     /* Botón Calcular Principal */
@@ -45,17 +45,17 @@ st.markdown("""
         font-weight: bold;
     }
 
-    /* Botón WhatsApp - Alargado y Fino (según dibujo de image_22.png) */
+    /* Botón WhatsApp - Alargado y Fino (Estilizado) */
     .whatsapp-btn-active {
         background-color: #25D366;
         color: white !important;
-        padding: 8px 15px; /* Menos padding vertical para hacerlo fino */
+        padding: 8px 15px; /* Fino */
         text-align: center;
         border-radius: 8px;
         font-weight: 600;
         font-size: 16px;
         text-decoration: none;
-        display: flex; /* Alargado horizontal */
+        display: flex; /* Alargado */
         align-items: center;
         justify-content: center;
         gap: 8px;
@@ -104,20 +104,24 @@ st.markdown("""
 ahora_arg = datetime.utcnow() - timedelta(hours=3)
 ahora = ahora_arg.strftime("%d/%m/%Y %H:%M")
 
-# 3. Encabezado Centrado (Logo y Cotización)
-st.markdown('<div class="header-container">', unsafe_allow_html=True)
+# 3. Encabezado SÚPER CENTRADO (Corregido)
+# Usamos un solo contenedor div para centrar todo el bloque
+st.markdown('<div class="super-center-header">', unsafe_allow_html=True)
 try:
     # Intenta cargar con el nombre largo, si falla intenta con logo.png
+    # st.image automáticamente respeta el alineado del div contenedor
     st.image("Gemini_Generated_Image_pz70wopz70wopz70.png", width=220)
 except:
     try:
         st.image("logo.png", width=220)
     except:
         # Texto de respaldo si no hay imagen
-        st.markdown("<h1 style='text-align: center; color: #1e3799;'>🏦 ARQUI GIROS</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='color: #1e3799;'>🏦 ARQUI GIROS</h1>", unsafe_allow_html=True)
 
+# El texto de cotización ahora es parte del mismo bloque centrado
 st.markdown(f'<p class="cotizacion-text">Cotización: 1 USD = {COTIZACION_OFICIAL:,} ARS</p>'.replace(",", "."), unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True) # Cierra el div súper centrado
+
 st.divider()
 
 if 'calc_step' not in st.session_state:
