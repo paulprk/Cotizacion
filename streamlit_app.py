@@ -95,7 +95,7 @@ st.divider()
 
 # --- SELECTOR DE APARTADO ---
 opcion = st.selectbox("Seleccione el tipo de operación:", 
-                      ["Seleccione una opción...", "💵 Dólares a Pesos", "🇦🇷 Pesos a Dólares"])
+                      ["💵 Dólares a Pesos", "🇦🇷 Pesos a Dólares"])
 
 if opcion == "💵 Dólares a Pesos":
     if 'calc_step' not in st.session_state:
