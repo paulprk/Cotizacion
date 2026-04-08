@@ -173,7 +173,110 @@ if opcion == "💵 Dólares a Pesos":
             st.rerun()
 
 elif opcion == "🇦🇷 Pesos a Dólares":
-    st.info("🔄 Este apartado estará disponible próximamente.")
+    if 'calc_step_ars' not in st.session_state:
+        st.session_state.calc_step_ars = False
+
+    # Selector de tipo de cálculo
+    tipo_calculo = st.radio("¿Qué desea calcular?", 
+                             ["Saber cuántos USD recibo (tengo Pesos)", "Saber cuántos ARS necesito (necesito USD)"])
+
+    col1, col2 = st.columns(2)
+    with col1:
+        if "recibo" in tipo_calculo:
+            monto_ars_in = st.text_input("Cantidad en Pesos (ARS):", value="150.500", disabled=st.session_state.calc_step_ars)
+            try: monto_usr = float(monto_ars_in.replace(".", "").replace(",", "."))
+            except: monto_usr = 0.0
+        else:
+            monto_usd_in = st.text_input("Cantidad en Dólares (USD):", value="100.00", disabled=st.session_state.calc_step_ars)
+            try: monto_usr = float(monto_usd_in.replace(",", "."))
+            except: monto_usr = 0.0
+            
+    with col2:
+        com_sel_ars = st.radio("Comisión", ["Incluida", "Aparte"], disabled=st.session_state.calc_step_ars, key="com_ars")
+        text_com_ars = "La comisión se descuenta del valor<br><span style='font-size: 10px;'>(monto - comisión)</span>" if com_sel_ars == "Incluida" else "La comisión se suma al valor a enviar<br><span style='font-size: 10px;'>(monto + comisión)</span>"
+        st.markdown(f'<p class="comision-info">{text_com_ars}</p>', unsafe_allow_html=True)
+
+    if not st.session_state.calc_step_ars:
+        if st.button("🚀 CALCULAR COTIZACIÓN", key="btn_ars"):
+            if monto_usr > 0:
+                st.session_state.calc_step_ars = True
+                st.rerun()
+
+    if st.session_state.calc_step_ars:
+        # CÁLCULOS LOGICA PESOS A DOLARES
+        if "recibo" in tipo_calculo:
+            # 1. El usuario puso PESOS
+            usd_brutos = monto_usr / TASA_ARS_A_USD
+            com_ars = 1.5 if usd_brutos <= 60 else int(usd_brutos * 0.025 * 100) / 100
+            if com_sel_ars == "Incluida":
+                recibir_final = usd_brutos - com_ars
+                pagar_final = monto_usr
+            else:
+                recibir_final = usd_brutos
+                pagar_final = monto_usr + (com_ars * TASA_ARS_A_USD)
+        else:
+            # 2. El usuario puso DOLARES
+            usd_objetivo = monto_usr
+            com_ars = 1.5 if usd_objetivo <= 60 else int(usd_objetivo * 0.025 * 100) / 100
+            if com_sel_ars == "Incluida":
+                recibir_final = usd_objetivo - com_ars
+                pagar_final = usd_objetivo * TASA_ARS_A_USD
+            else:
+                recibir_final = usd_objetivo
+                pagar_final = (usd_objetivo + com_ars) * TASA_ARS_A_USD
+
+        # Formateadores locales
+        def f_ars(n): return f"{int(n):,}".replace(",", ".")
+        def f_usd(n): return f"{n:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+        st.markdown(f"""
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 12px; border-left: 5px solid #3498db; color: black; margin-bottom: 20px; text-align:center;">
+            <h2 style="color: #2980b9; margin:0;">RECIBIR: {f_usd(recibir_final)} USD</h2>
+            <p style="margin:5px 0; font-size:14px;">Tasa: 1 USD = {TASA_ARS_A_USD:,} ARS | Comisión: {com_ars:.2f} USD</p>
+            <p style="color: #e67e22; margin:0; font-weight:bold;">Entregar: {f_ars(pagar_final)} ARS</p>
+        </div>
+        """.replace(",", "."), unsafe_allow_html=True)
+
+        st.markdown("### 📝 Datos de Destino (Exterior)")
+        banco_ars = st.selectbox("Banco del exterior:", ["Banco Pichincha", "Banco Guayaquil", "Banco Pacífico", "Banco Bolivariano", "Otro"], key="b_ars")
+        if banco_ars == "Otro":
+            banco_f = st.text_input("Especifique banco:", placeholder="Ej. Banco del Austro")
+        else: banco_f = banco_ars
+
+        tipo_cta = st.selectbox("Tipo de cuenta:", ["Ahorros", "Corriente"])
+        
+        c1, c2 = st.columns(2)
+        with c1: n_cta = st.text_input("Número de cuenta:", placeholder="Ej. 2200123456")
+        with c2: cedula = st.text_input("Número de cédula:", placeholder="Ej. 1712345678")
+        
+        nom_ape = st.text_input("Nombre y Apellido del beneficiario:", placeholder="Nombre completo")
+
+        # WHATSAPP PESOS A DOLARES
+        ws_url = "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+        msg_ars = urllib.parse.quote(f"Hola Arqui Giros, cotización ARS a USD:\n\n"
+                                     f"*Enviar:* {f_ars(pagar_final)} ARS\n"
+                                     f"*Recibir:* {f_usd(recibir_final)} USD\n"
+                                     f"--------------------------\n"
+                                     f"*DATOS DESTINO:*\n"
+                                     f"*Banco:* {banco_f}\n"
+                                     f"*Cuenta:* {tipo_cta} - {n_cta}\n"
+                                     f"*Cédula:* {cedula}\n"
+                                     f"*Nombre:* {nom_ape.upper()}\n\n"
+                                     f"Me confirmas para transferir los pesos.")
+
+        if n_cta and cedula and nom_ape:
+            st.markdown(f'<div class="whatsapp-link"><a href="https://api.whatsapp.com/send?text={msg_ars}" target="_blank" class="btn-ws bg-active"><img src="{ws_url}" class="ws-icon"> Compartir a WhatsApp</a></div>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'''
+                <div class="whatsapp-link" style="flex-direction: column; align-items: center;">
+                    <div class="btn-ws bg-inactive"><img src="{ws_url}" class="ws-icon" style="filter:grayscale(1)"> Compartir a WhatsApp</div>
+                    <p style="color: #ff4b4b; font-size: 13px; margin-top: 8px; font-weight: bold; text-align: center;">⚠️ Complete los datos (Cuenta, Cédula y Nombre) para compartir</p>
+                </div>''', unsafe_allow_html=True)
+
+        st.write("")
+        if st.button("🔄 NUEVA COTIZACIÓN", key="reset_ars"):
+            st.session_state.calc_step_ars = False
+            st.rerun()
 
 else:
     st.write("👋 ¡Bienvenido! Por favor, selecciona arriba qué tipo de cambio deseas realizar para comenzar.")
