@@ -45,7 +45,7 @@ st.markdown("""
         font-weight: bold;
     }
 
-    /* Botón WhatsApp - Alargado y Fino (Estilizado) */
+    /* Botón WhatsApp - Alargado y Fino (según dibujo de image_22.png) */
     .whatsapp-btn-active {
         background-color: #25D366;
         color: white !important;
