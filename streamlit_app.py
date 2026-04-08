@@ -154,7 +154,31 @@ if opcion == "💵 Dólares a Pesos":
         with c2: nombre = st.text_input("Nombre y Apellido:", placeholder="Ingrese nombre")
 
         ws_icon_url = "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
-        msg = urllib.parse.quote(f"Hola, mi cotización Arqui Giros:\n\n*Recibir:* {f_ars(recibir)} ARS\n*Banco:* {banco_final}\n*Destino:* {nombre.upper()}\n*CBU:* {cvu}\n\nAyúdame con la cuenta.")
+        
+        # 1. Obtenemos la fecha y hora actual en el formato deseado
+        fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M")
+        
+        # 2. Armamos el bloque de texto con el formato exacto
+        texto_whatsapp_usd = (
+            f"Hola Arqui Giros, cotización USD a ARS:\n"
+            f"------------------------------\n"
+            f"📅 Fecha: {fecha_actual}\n"
+            f"🏦 Banco: {banco_final}\n\n"
+            f"💵 Monto: {f_usd(dol)} USD\n"
+            f"⚙️ Comisión: {f_usd(com_final)} USD ({comision_sel})\n"
+            f"💰 RECIBIR: {f_ars(recibir)} ARS\n"
+            f"💳 TRANSFERIR: {f_usd(transferir)} USD\n\n"
+            f"------------------------------\n"
+            f"DATOS DE DESTINO:\n"
+            f"👤 Nombre: {nombre.upper()}\n"
+            f"🔑 CBU/CVU/Alias: {cvu}\n"
+            f"------------------------------\n"
+            f"Tasa aplicada: 1 USD = {f_ars(TASA_USD_A_ARS)}\n\n"
+            f"Me ayudas con la cuenta por favor."
+        )
+        
+        # 3. Codificamos el mensaje para la URL de WhatsApp
+        msg = urllib.parse.quote(texto_whatsapp_usd)
         
         if cvu and nombre:
             st.markdown(f'<div class="whatsapp-link"><a href="https://api.whatsapp.com/send?text={msg}" target="_blank" class="btn-ws bg-active"><img src="{ws_icon_url}" class="ws-icon"> Compartir a WhatsApp</a></div>', unsafe_allow_html=True)
