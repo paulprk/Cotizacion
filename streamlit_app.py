@@ -83,7 +83,7 @@ with col1:
     except ValueError:
         dol = 0.0
 with col2:
-    comision_sel = st.radio("¿Comisión?", ["Incluida", "Aparte"], disabled=st.session_state.calc_step)
+    comision_sel = st.radio("Comisión", ["Incluida", "Aparte"], disabled=st.session_state.calc_step)
 
 if not st.session_state.calc_step:
     if st.button("🚀 CALCULAR COTIZACIÓN"):
