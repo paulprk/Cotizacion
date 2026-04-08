@@ -31,6 +31,13 @@
             background: #ffffff;
         }
 
+        #comprobante_usd {
+            border: 1px dashed #ccc;
+            border-radius: 10px;
+            margin-top: 15px;
+            background-color: #ffffff;
+        }
+
         /* ENCABEZADO Y COTIZACIÓN */
         .arqui-title {
             text-align: center; color: #1e3799; font-weight: bold; font-size: 30px;
@@ -177,7 +184,7 @@
 
             <h3 style="font-size: 18px;">📝 Datos de Destino</h3>
             <label>Banco remitente:</label>
-            <select id="usd_banco" onchange="checkUsdOtroBanco()">
+            <select id="usd_banco" onchange="checkUsdOtroBanco(); actualizarVistaPrevia()">
                 <option value="Banco Pichincha">Banco Pichincha</option>
                 <option value="Banco Guayaquil">Banco Guayaquil</option>
                 <option value="Banco Pacífico">Banco Pacífico</option>
@@ -188,8 +195,8 @@
             <input type="text" id="usd_banco_otro" class="hidden" placeholder="Ej. Produbanco">
 
             <div class="row">
-                <div class="col"><input type="text" id="usd_cvu" placeholder="CBU/CVU o Alias" oninput="validarWsUsd()"></div>
-                <div class="col"><input type="text" id="usd_nombre" placeholder="Nombre y Apellido" oninput="validarWsUsd()"></div>
+                <div class="col"><input type="text" id="usd_cvu" placeholder="CBU/CVU o Alias" oninput="validarWsUsd(); actualizarVistaPrevia()"></div>
+                <div class="col"><input type="text" id="usd_nombre" placeholder="Nombre y Apellido" oninput="validarWsUsd(); actualizarVistaPrevia()"></div>
             </div>
 
            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
@@ -500,6 +507,17 @@
         }
     }
     // FUNCIÓN PARA GENERAR LA IMAGEN DE LA COTIZACIÓN
+    // Esta función actualiza el texto del comprobante EN VIVO
+function actualizarVistaPrevia() {
+    let banco = document.getElementById('usd_banco').value;
+    if (banco === "Otro") {
+        banco = document.getElementById('usd_banco_otro').value || "Otro";
+    }
+
+    document.getElementById('txt_banco_res').innerHTML = "<b>Banco:</b> " + banco;
+    document.getElementById('txt_datos_res').innerHTML = "<b>CBU/Alias:</b> " + document.getElementById('usd_cvu').value;
+    document.getElementById('txt_nombre_res').innerHTML = "<b>Nombre:</b> " + document.getElementById('usd_nombre').value.toUpperCase();
+}
    function descargarImagen() {
     const selector = document.getElementById('mainSelector').value;
     
