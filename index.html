@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arqui Giros - Oficial</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arqui Giros - Oficial</title>
@@ -100,6 +108,15 @@
 </head>
 <body>
 
+<body>
+<div class="container">
+    <div class="arqui-title">
+        <img src="https://raw.githubusercontent.com/paulprk/Cotizacion/main/Gemini_Generated_Image_pz70wopz70wopz70.png" 
+             style="height: 60px; width: auto;" 
+             onerror="this.src='https://via.placeholder.com/60?text=AG'">
+        Arqui Giros
+</div>
+
 <div class="container">
     <div class="arqui-title">
         <img src="https://raw.githubusercontent.com/paulprk/Cotizacion/main/Gemini_Generated_Image_pz70wopz70wopz70.png" style="height: 50px; width: auto;" onerror="this.src='https://via.placeholder.com/50?text=Logo'">
@@ -165,13 +182,16 @@
                 <div class="col"><input type="text" id="usd_nombre" placeholder="Nombre y Apellido" oninput="validarWsUsd()"></div>
             </div>
 
-            <div style="display: flex; flex-direction: column; align-items: center;">
-                <a href="#" id="usd_ws_btn" target="_blank" class="btn-ws bg-inactive">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" class="ws-icon" id="usd_ws_img" style="filter:grayscale(1)"> 
-                    Compartir a WhatsApp
-                </a>
-                <p id="usd_ws_warn" class="ws-warning">⚠️ Complete los datos para compartir a WhatsApp</p>
-            </div>
+           <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+            <a href="#" id="usd_ws_btn" target="_blank" class="btn-ws bg-inactive">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" class="ws-icon" id="usd_ws_img" style="filter:grayscale(1)"> 
+                Compartir a WhatsApp
+            </a>
+            
+            <button class="btn-primary" style="background-color: #3498db; margin-top: 5px; width: fit-content; padding: 10px 20px;" onclick="descargarImagen()">📸 Guardar Cotización como Imagen</button>
+            
+            <p id="usd_ws_warn" class="ws-warning">⚠️ Complete los datos para compartir</p>
+        </div>
 
             <br>
             <button class="btn-secondary" onclick="resetUsdToArs()">🔄 NUEVA COTIZACIÓN</button>
@@ -468,6 +488,29 @@
             img.style.filter = "grayscale(1)"; warn.classList.remove('hidden');
             btn.removeAttribute('href');
         }
+    }
+    // FUNCIÓN PARA GENERAR LA IMAGEN DE LA COTIZACIÓN
+    function descargarImagen() {
+        // Seleccionamos el cuadro de resultado según lo que esté abierto
+        const esUsd = document.getElementById('mainSelector').value === 'usd_ars';
+        const element = esUsd ? document.querySelector('.result-box-usd') : document.querySelector('.result-box-ars');
+
+        if(!element) {
+            alert("Primero debes calcular la cotización");
+            return;
+        }
+
+        // Sacamos la "foto" del cuadro de resultado
+        html2canvas(element, {
+            backgroundColor: "#ffffff",
+            scale: 2, // Mejor calidad
+            useCORS: true // Para que cargue bien las imágenes externas
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'Arqui_Giros_Cotizacion.png';
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        });
     }
 </script>
 
