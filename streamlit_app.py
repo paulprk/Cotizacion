@@ -211,6 +211,7 @@ elif opcion == "🇦🇷 Pesos a Dólares":
         def f_ars(n): return f"{int(n):,}".replace(",", ".")
         def f_usd(n): return f"{n:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
+        # --- RECUADRO DE RESULTADO CORREGIDO ---
         st.markdown(f"""
         <div style="background-color: #f8f9fa; padding: 15px; border-radius: 12px; border-left: 5px solid #3498db; color: black; margin-bottom: 20px; text-align:center;">
             <h2 style="color: #2980b9; margin:0;">RECIBIR: {f_usd(recibir_final)} USD</h2>
