@@ -14,45 +14,55 @@ st.markdown("""
     <style>
     .main { background-color: #ffffff; }
     .stRadio > div { flex-direction: row; justify-content: center; }
+    
+    /* Botón Calcular Principal */
     div.stButton > button:first-child {
         background-color: #1e3799;
         color: white;
         border-radius: 10px;
-        height: 3.5em;
+        height: 3em;
         width: 100%;
         font-weight: bold;
     }
+
+    /* Botón WhatsApp - Versión Estilizada y Compacta */
     .whatsapp-btn-active {
         background-color: #25D366;
         color: white !important;
-        padding: 15px;
+        padding: 10px 20px;
         text-align: center;
-        border-radius: 12px;
-        font-weight: bold;
-        font-size: 18px;
+        border-radius: 30px; /* Bordes más redondeados para estilo moderno */
+        font-weight: 600;
+        font-size: 16px;
         text-decoration: none;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
+        gap: 8px;
+        box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+        width: fit-content;
+        margin: 10px auto; /* Centrado y menos invasivo */
     }
+
     .whatsapp-btn-inactive {
-        background-color: #d1d1d1;
-        color: #7a7a7a !important;
-        padding: 15px;
+        background-color: #e0e0e0;
+        color: #888888 !important;
+        padding: 10px 20px;
         text-align: center;
-        border-radius: 12px;
-        font-weight: bold;
-        font-size: 18px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 16px;
         text-decoration: none;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
+        gap: 8px;
+        width: fit-content;
+        margin: 10px auto;
         pointer-events: none;
     }
-    .whatsapp-btn img { width: 25px; height: 25px; }
+    
+    .whatsapp-btn img { width: 20px; height: 20px; }
     input { text-align: center; }
     </style>
     """, unsafe_allow_html=True)
@@ -125,16 +135,13 @@ if st.session_state.calc_step:
     
     banco_final = banco_sel
     if banco_sel == "Otro":
-        # Placeholder específico: Ej. Produbanco
         otro_banco = st.text_input("Especifique su banco:", placeholder="Ej. Produbanco")
         banco_final = f"Banco {otro_banco}" if otro_banco else "Otro Banco"
 
     c_cta1, c_cta2 = st.columns(2)
     with c_cta1:
-        # Placeholder específico: ingrese datos
-        cvu_cbu = st.text_input("Ingrese su CVU/CBU o Alias:", placeholder="Ingrese Informacion")
+        cvu_cbu = st.text_input("Ingrese su CVU/CBU o Alias:", placeholder="Ingrese Información")
     with c_cta2:
-        # Placeholder específico: ingrese nombre
         nombre_titular = st.text_input("Ingrese nombre y apellido:", placeholder="Ingrese su Nombre y Apellido")
 
     datos_completos = cvu_cbu.strip() != "" and nombre_titular.strip() != ""
@@ -163,19 +170,23 @@ if st.session_state.calc_step:
 
     if datos_completos:
         st.markdown(f'''
-            <a href="{share_url}" target="_blank" class="whatsapp-btn-active">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
-                ENVIAR POR WHATSAPP
-            </a>
+            <div style="text-align: center;">
+                <a href="{share_url}" target="_blank" class="whatsapp-btn-active">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
+                    ENVIAR POR WHATSAPP
+                </a>
+            </div>
             ''', unsafe_allow_html=True)
     else:
         st.markdown(f'''
-            <div class="whatsapp-btn-inactive">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="filter: grayscale(1);">
-                COMPLETE DATOS PARA ENVIAR
+            <div style="text-align: center;">
+                <div class="whatsapp-btn-inactive">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="filter: grayscale(1);">
+                    COMPLETE DATOS PARA ENVIAR
+                </div>
             </div>
             ''', unsafe_allow_html=True)
-        st.caption("⚠️ Por favor complete el CBU y Nombre para habilitar el botón de envío.")
+        st.caption("<p style='text-align: center;'>⚠️ Por favor complete el CBU y Nombre.</p>", unsafe_allow_html=True)
 
     st.write("")
     if st.button("🔄 REALIZAR NUEVA COTIZACIÓN"):
