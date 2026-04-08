@@ -108,13 +108,7 @@ if opcion == "💵 Dólares a Pesos":
         except ValueError: dol = 0.0
     with col2:
         comision_sel = st.radio("Comisión", ["Incluida", "Aparte"], disabled=st.session_state.calc_step)
-        
-        # --- MODIFICA ESTA LÍNEA ---
-        if comision_sel == "Incluida":
-            text_com = "La comisión se descuenta del valor<br><span style='font-size: 10px;'>(monto - comisión)</span>"
-        else:
-            text_com = "La comisión se suma al valor a enviar<br><span style='font-size: 10px;'>(monto + comisión)</span>"
-        
+        text_com = "Se descuenta del monto" if comision_sel == "Incluida" else "Se suma al valor"
         st.markdown(f'<p class="comision-info">{text_com}</p>', unsafe_allow_html=True)
 
     if not st.session_state.calc_step:
@@ -154,7 +148,7 @@ if opcion == "💵 Dólares a Pesos":
         with c2: nombre = st.text_input("Nombre y Apellido:", placeholder="Ingrese nombre")
 
         ws_icon_url = "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
-        msg = urllib.parse.quote(f"Hola Arqui Giros, cotización USD a ARS:\n\n*Recibir:* {f_ars(recibir)} ARS\n*Banco:* {banco_final}\n*Destino:* {nombre.upper()}\n*CBU:* {cvu}\n\nAyúdame con la cuenta.")
+        msg = urllib.parse.quote(f"Hola, mi cotización Arqui Giros:\n\n*Recibir:* {f_ars(recibir)} ARS\n*Banco:* {banco_final}\n*Destino:* {nombre.upper()}\n*CBU:* {cvu}\n\nAyúdame con la cuenta.")
         
         if cvu and nombre:
             st.markdown(f'<div class="whatsapp-link"><a href="https://api.whatsapp.com/send?text={msg}" target="_blank" class="btn-ws bg-active"><img src="{ws_icon_url}" class="ws-icon"> Compartir a WhatsApp</a></div>', unsafe_allow_html=True)
