@@ -10,29 +10,29 @@ COTIZACION_OFICIAL = 1445
 
 st.set_page_config(page_title="Arqui Giros - Oficial", page_icon="💸")
 
-# Estilos CSS
+# Estilos CSS REFORZADOS
 st.markdown("""
     <style>
     .main { background-color: #ffffff; }
     .stRadio > div { flex-direction: row; justify-content: center; }
     
-    /* BLOQUE DE ENCABEZADO CENTRADO (SIN COLUMNAS) */
-    .super-center-header {
-        text-align: center;
-        width: 100%;
-        display: block;
+    /* Forzar centrado de la imagen de Streamlit */
+    [data-testid="stImage"] {
+        display: flex;
+        justify-content: center;
         margin-left: auto;
         margin-right: auto;
-        margin-bottom: 20px;
     }
 
-    .cotizacion-text {
+    /* Contenedor de texto de cotización */
+    .cotizacion-box {
+        text-align: center;
+        width: 100%;
         font-size: 20px;
         font-weight: bold;
         color: #31333F;
-        margin-top: 15px; /* Espacio justo entre logo y texto */
-        text-align: center;
-        display: block;
+        margin-top: 15px;
+        margin-bottom: 20px;
     }
 
     /* Botón Calcular Principal */
@@ -45,22 +45,22 @@ st.markdown("""
         font-weight: bold;
     }
 
-    /* Botón WhatsApp - Alargado y Fino (Estilizado) */
+    /* Botón WhatsApp - Fino y Alargado (según tu dibujo) */
     .whatsapp-btn-active {
         background-color: #25D366;
         color: white !important;
-        padding: 8px 15px; /* Fino */
+        padding: 8px 15px;
         text-align: center;
         border-radius: 8px;
         font-weight: 600;
         font-size: 16px;
         text-decoration: none;
-        display: flex; /* Alargado */
+        display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
         box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
-        width: 100%; /* Ocupa el ancho */
+        width: 100%;
         margin-top: 10px;
     }
 
@@ -82,7 +82,6 @@ st.markdown("""
         pointer-events: none;
     }
     
-    /* Icono de WhatsApp Micro */
     .whatsapp-btn img { 
         width: 18px !important; 
         height: 18px !important; 
@@ -104,23 +103,18 @@ st.markdown("""
 ahora_arg = datetime.utcnow() - timedelta(hours=3)
 ahora = ahora_arg.strftime("%d/%m/%Y %H:%M")
 
-# 3. Encabezado SÚPER CENTRADO (Corregido)
-# Usamos un solo contenedor div para centrar todo el bloque
-st.markdown('<div class="super-center-header">', unsafe_allow_html=True)
+# --- ENCABEZADO ---
+# Intentamos cargar la imagen (el CSS de arriba se encarga de centrarla)
 try:
-    # Intenta cargar con el nombre largo, si falla intenta con logo.png
-    # st.image automáticamente respeta el alineado del div contenedor
     st.image("Gemini_Generated_Image_pz70wopz70wopz70.png", width=220)
 except:
     try:
         st.image("logo.png", width=220)
     except:
-        # Texto de respaldo si no hay imagen
-        st.markdown("<h1 style='color: #1e3799;'>🏦 ARQUI GIROS</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; color: #1e3799;'>🏦 ARQUI GIROS</h1>", unsafe_allow_html=True)
 
-# El texto de cotización ahora es parte del mismo bloque centrado
-st.markdown(f'<p class="cotizacion-text">Cotización: 1 USD = {COTIZACION_OFICIAL:,} ARS</p>'.replace(",", "."), unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True) # Cierra el div súper centrado
+# Texto de cotización centrado
+st.markdown(f'<div class="cotizacion-box">Cotización: 1 USD = {COTIZACION_OFICIAL:,} ARS</div>'.replace(",", "."), unsafe_allow_html=True)
 
 st.divider()
 
@@ -215,7 +209,7 @@ if st.session_state.calc_step:
     msg_encoded = urllib.parse.quote(mensaje)
     share_url = f"https://api.whatsapp.com/send?text={msg_encoded}"
 
-    # Botón de WhatsApp estilizado (Alargado y Fino)
+    # Botón de WhatsApp fino y alargado
     if datos_completos:
         st.markdown(f'''
             <a href="{share_url}" target="_blank" class="whatsapp-btn-active">
