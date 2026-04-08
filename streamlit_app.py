@@ -170,7 +170,7 @@ if st.session_state.calc_step:
     ws_icon_url = "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
     msg = urllib.parse.quote(f"Hola, mi cotización Arqui Giros:\n\n*Recibir:* {f_ars(recibir)} ARS\n*Banco:* {banco_final}\n*Destino:* {nombre.upper()}\n*CBU:* {cvu}\n\nAyúdame con la cuenta.")
     
-    if cvu and nombre:
+  if cvu and nombre:
         st.markdown(f'''
             <div class="whatsapp-link">
                 <a href="https://api.whatsapp.com/send?text={msg}" target="_blank" class="btn-ws bg-active">
@@ -180,10 +180,13 @@ if st.session_state.calc_step:
             ''', unsafe_allow_html=True)
     else:
         st.markdown(f'''
-            <div class="whatsapp-link">
+            <div class="whatsapp-link" style="flex-direction: column; align-items: center;">
                 <div class="btn-ws bg-inactive">
-                    <img src="{ws_icon_url}" class="ws-icon" style="filter:grayscale(1)"> Complete datos
+                    <img src="{ws_icon_url}" class="ws-icon" style="filter:grayscale(1)"> Compartir a WhatsApp
                 </div>
+                <p style="color: #ff4b4b; font-size: 13px; margin-top: 8px; font-weight: bold; text-align: center;">
+                    ⚠️ Complete los datos para compartir a WhatsApp
+                </p>
             </div>
             ''', unsafe_allow_html=True)
 
