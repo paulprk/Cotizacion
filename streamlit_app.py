@@ -1,6 +1,8 @@
 import streamlit as st
 from datetime import datetime, timedelta
 import urllib.parse
+import base64
+import os
 
 # ==========================================
 # CONFIGURACIÓN DE TASA (MODIFICA AQUÍ)
@@ -10,28 +12,54 @@ COTIZACION_OFICIAL = 1445
 
 st.set_page_config(page_title="Arqui Giros - Oficial", page_icon="💸")
 
-# Estilos CSS REFORZADOS
+# --- FUNCIÓN PARA CARGAR IMAGEN COMO BASE64 ---
+# Esto es necesario para incrustar la imagen dentro del HTML del título
+def get_base64_image(image_path):
+    if os.path.exists(image_path):
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
+    return None
+
+# Intentamos cargar la imagen con tu nombre largo o el corto
+# CAMBIA ESTO si renombras tu imagen en GitHub
+img_name = "Gemini_Generated_Image_pz70wopz70wopz70.png"
+# img_name = "logo.png" # Si la renombras, usa esta línea y comenta la de arriba
+
+img_base64 = get_base64_image(img_name)
+
+# Estilos CSS
 st.markdown("""
     <style>
     .main { background-color: #ffffff; }
     .stRadio > div { flex-direction: row; justify-content: center; }
     
-    /* Forzar centrado de la imagen de Streamlit */
-    [data-testid="stImage"] {
+    /* Estilo del Título Integrado (Logo + Texto) */
+    .arqui-title {
+        text-align: center;
+        color: #1e3799;
+        font-weight: bold;
+        font-size: 36px; /* Tamaño del título principal */
         display: flex;
+        align-items: center;
         justify-content: center;
-        margin-left: auto;
-        margin-right: auto;
+        gap: 15px; /* Espacio entre logo y texto */
+        margin-bottom: 5px;
     }
 
-    /* Contenedor de texto de cotización */
+    /* Estilo para el Logo dentro del Título (Mismo tamaño que texto) */
+    .title-logo {
+        height: 36px; /* Mismo height que el font-size del título */
+        width: auto;
+    }
+
+    /* Estilo para el Texto de Cotización Centrado */
     .cotizacion-box {
         text-align: center;
         width: 100%;
         font-size: 20px;
         font-weight: bold;
         color: #31333F;
-        margin-top: 15px;
+        margin-top: -5px;
         margin-bottom: 20px;
     }
 
@@ -45,48 +73,41 @@ st.markdown("""
         font-weight: bold;
     }
 
-    /* Botón WhatsApp - Fino y Alargado (según tu dibujo) */
+    /* Botón WhatsApp - Rectangular y Compacto (Anti-errores Android) */
     .whatsapp-btn-active {
         background-color: #25D366;
         color: white !important;
-        padding: 8px 15px;
+        padding: 8px 16px;
         text-align: center;
-        border-radius: 8px;
+        border-radius: 8px; /* Rectangular suavizado */
         font-weight: 600;
-        font-size: 16px;
+        font-size: 14px;
         text-decoration: none;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
         box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
-        width: 100%;
-        margin-top: 10px;
+        border: none;
     }
 
     .whatsapp-btn-inactive {
         background-color: #e0e0e0;
         color: #888888 !important;
-        padding: 8px 15px;
+        padding: 8px 16px;
         text-align: center;
         border-radius: 8px;
         font-weight: 600;
-        font-size: 16px;
+        font-size: 14px;
         text-decoration: none;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        width: 100%;
-        margin-top: 10px;
         pointer-events: none;
     }
     
-    .whatsapp-btn img { 
-        width: 18px !important; 
-        height: 18px !important; 
-    }
-    
+    .whatsapp-btn img { width: 18px; height: 18px; }
     input { text-align: center; }
     
     .comision-info {
@@ -103,17 +124,21 @@ st.markdown("""
 ahora_arg = datetime.utcnow() - timedelta(hours=3)
 ahora = ahora_arg.strftime("%d/%m/%Y %H:%M")
 
-# --- ENCABEZADO ---
-# Intentamos cargar la imagen (el CSS de arriba se encarga de centrarla)
-try:
-    st.image("Gemini_Generated_Image_pz70wopz70wopz70.png", width=220)
-except:
-    try:
-        st.image("logo.png", width=220)
-    except:
-        st.markdown("<h1 style='text-align: center; color: #1e3799;'>🏦 ARQUI GIROS</h1>", unsafe_allow_html=True)
+# --- ENCABEZADO INTEGRADO (Logo + Texto) ---
+# Creamos el HTML dinámico para el título
+title_html = '<div class="arqui-title">'
+if img_base64:
+    # Si la imagen existe, la insertamos como Base64
+    title_html += f'<img src="data:image/png;base64,{img_base64}" class="title-logo">'
+else:
+    # Si no, mostramos el emoji original como respaldo
+    title_html += '🏦 '
+title_html += 'Arqui Giros</div>'
 
-# Texto de cotización centrado
+# Mostramos el título integrado
+st.markdown(title_html, unsafe_allow_html=True)
+
+# Texto de cotización centrado justo debajo
 st.markdown(f'<div class="cotizacion-box">Cotización: 1 USD = {COTIZACION_OFICIAL:,} ARS</div>'.replace(",", "."), unsafe_allow_html=True)
 
 st.divider()
@@ -209,22 +234,23 @@ if st.session_state.calc_step:
     msg_encoded = urllib.parse.quote(mensaje)
     share_url = f"https://api.whatsapp.com/send?text={msg_encoded}"
 
-    # Botón de WhatsApp fino y alargado
+    # Botón centrado y ajustado
+    st.markdown('<div style="text-align: center;">', unsafe_allow_html=True)
     if datos_completos:
         st.markdown(f'''
             <a href="{share_url}" target="_blank" class="whatsapp-btn-active">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
-                ENVIAR POR WHATSAPP
+                Enviar WhatsApp
             </a>
             ''', unsafe_allow_html=True)
     else:
         st.markdown(f'''
             <div class="whatsapp-btn-inactive">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="filter: grayscale(1);">
-                COMPLETE DATOS PARA ENVIAR
+                Completar datos
             </div>
             ''', unsafe_allow_html=True)
-        st.caption("<p style='text-align: center;'>⚠️ Por favor complete el CBU y Nombre.</p>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
     st.write("")
     if st.button("🔄 REALIZAR NUEVA COTIZACIÓN"):
