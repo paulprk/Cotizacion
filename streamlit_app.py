@@ -16,6 +16,25 @@ st.markdown("""
     .main { background-color: #ffffff; }
     .stRadio > div { flex-direction: row; justify-content: center; }
     
+    /* Centrado del encabezado (Logo y Cotización) */
+    .header-container {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .cotizacion-text {
+        font-size: 20px;
+        font-weight: bold;
+        color: #31333F;
+        margin-top: 10px;
+        text-align: center;
+    }
+
     /* Botón Calcular Principal */
     div.stButton > button:first-child {
         background-color: #1e3799;
@@ -26,41 +45,49 @@ st.markdown("""
         font-weight: bold;
     }
 
-    /* Botón WhatsApp - Rectangular y Compacto (Anti-errores Android) */
+    /* Botón WhatsApp - Alargado y Fino (Estilizado) */
     .whatsapp-btn-active {
         background-color: #25D366;
         color: white !important;
-        padding: 8px 16px; /* Menos espacio para que no sea tosco */
+        padding: 8px 15px; /* Menos padding vertical para hacerlo fino */
         text-align: center;
-        border-radius: 8px; /* Rectangular con puntas suavizadas */
+        border-radius: 8px;
         font-weight: 600;
-        font-size: 14px; /* Tamaño de letra más seguro para móviles */
+        font-size: 16px;
         text-decoration: none;
-        display: inline-flex; /* Se adapta al texto */
+        display: flex; /* Alargado horizontal */
         align-items: center;
         justify-content: center;
         gap: 8px;
         box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
-        border: none;
+        width: 100%; /* Ocupa el ancho */
+        margin-top: 10px;
     }
 
     .whatsapp-btn-inactive {
         background-color: #e0e0e0;
         color: #888888 !important;
-        padding: 8px 16px;
+        padding: 8px 15px;
         text-align: center;
         border-radius: 8px;
         font-weight: 600;
-        font-size: 14px;
+        font-size: 16px;
         text-decoration: none;
-        display: inline-flex;
+        display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
+        width: 100%;
+        margin-top: 10px;
         pointer-events: none;
     }
     
-    .whatsapp-btn img { width: 18px; height: 18px; }
+    /* Icono de WhatsApp Micro */
+    .whatsapp-btn img { 
+        width: 18px !important; 
+        height: 18px !important; 
+    }
+    
     input { text-align: center; }
     
     .comision-info {
@@ -77,19 +104,20 @@ st.markdown("""
 ahora_arg = datetime.utcnow() - timedelta(hours=3)
 ahora = ahora_arg.strftime("%d/%m/%Y %H:%M")
 
-# 3. Encabezado con el Logo
-col_logo1, col_logo2, col_logo3 = st.columns([1,2,1])
-with col_logo2:
+# 3. Encabezado Centrado (Logo y Cotización)
+st.markdown('<div class="header-container">', unsafe_allow_html=True)
+try:
+    # Intenta cargar con el nombre largo, si falla intenta con logo.png
+    st.image("Gemini_Generated_Image_pz70wopz70wopz70.png", width=220)
+except:
     try:
-        # Intenta cargar con el nombre largo, si falla intenta con logo.png
-        st.image("Gemini_Generated_Image_pz70wopz70wopz70.png", width=220)
+        st.image("logo.png", width=220)
     except:
-        try:
-            st.image("logo.png", width=220)
-        except:
-            st.markdown("<h1 style='text-align: center; color: #1e3799;'>🏦 ARQUI GIROS</h1>", unsafe_allow_html=True)
+        # Texto de respaldo si no hay imagen
+        st.markdown("<h1 style='text-align: center; color: #1e3799;'>🏦 ARQUI GIROS</h1>", unsafe_allow_html=True)
 
-st.markdown(f"<p style='text-align: center; font-size: 20px;'><b>Cotización:</b> 1 USD = {COTIZACION_OFICIAL:,} ARS</p>".replace(",", "."), unsafe_allow_html=True)
+st.markdown(f'<p class="cotizacion-text">Cotización: 1 USD = {COTIZACION_OFICIAL:,} ARS</p>'.replace(",", "."), unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 st.divider()
 
 if 'calc_step' not in st.session_state:
@@ -138,9 +166,9 @@ if st.session_state.calc_step:
 
     st.markdown(f"""
     <div style="background-color: #f8f9fa; padding: 20px; border-radius: 15px; border-left: 5px solid #2ecc71; color: black; margin-bottom: 20px;">
-        <h2 style="color: #27ae60; margin:0;">RECIBIR: {fmt_ars(monto_recibir_ars)} ARS</h2>
-        <p style="margin:5px 0;">Monto: {fmt_usd(dol)} USD | Comisión: {txt_com}</p>
-        <p style="color: #e67e22; margin:0; font-weight:bold;">Transferir: {fmt_usd(monto_transferir_usd)} USD</p>
+        <h2 style="color: #27ae60; margin:0; text-align: center;">RECIBIR: {fmt_ars(monto_recibir_ars)} ARS</h2>
+        <p style="margin:5px 0; text-align: center;">Monto: {fmt_usd(dol)} USD | Comisión: {txt_com}</p>
+        <p style="color: #e67e22; margin:0; font-weight:bold; text-align: center;">Transferir: {fmt_usd(monto_transferir_usd)} USD</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -183,23 +211,22 @@ if st.session_state.calc_step:
     msg_encoded = urllib.parse.quote(mensaje)
     share_url = f"https://api.whatsapp.com/send?text={msg_encoded}"
 
-    # Botón centrado y ajustado
-    st.markdown('<div style="text-align: center;">', unsafe_allow_html=True)
+    # Botón de WhatsApp estilizado (Alargado y Fino)
     if datos_completos:
         st.markdown(f'''
             <a href="{share_url}" target="_blank" class="whatsapp-btn-active">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
-                Enviar WhatsApp
+                ENVIAR POR WHATSAPP
             </a>
             ''', unsafe_allow_html=True)
     else:
         st.markdown(f'''
             <div class="whatsapp-btn-inactive">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="filter: grayscale(1);">
-                Completar datos
+                COMPLETE DATOS PARA ENVIAR
             </div>
             ''', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.caption("<p style='text-align: center;'>⚠️ Por favor complete el CBU y Nombre.</p>", unsafe_allow_html=True)
 
     st.write("")
     if st.button("🔄 REALIZAR NUEVA COTIZACIÓN"):
