@@ -10,13 +10,10 @@ COTIZACION_OFICIAL = 1445
 
 st.set_page_config(page_title="Arqui Giros - Oficial", page_icon="💸")
 
-# Estilos CSS dinámicos
 st.markdown("""
     <style>
     .main { background-color: #ffffff; }
     .stRadio > div { flex-direction: row; justify-content: center; }
-    
-    /* Botón Calcular Principal */
     div.stButton > button:first-child {
         background-color: #1e3799;
         color: white;
@@ -25,8 +22,6 @@ st.markdown("""
         width: 100%;
         font-weight: bold;
     }
-
-    /* Botón WhatsApp Verde */
     .whatsapp-btn-active {
         background-color: #25D366;
         color: white !important;
@@ -42,8 +37,6 @@ st.markdown("""
         gap: 10px;
         box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
     }
-
-    /* Botón WhatsApp Gris (Inactivo) */
     .whatsapp-btn-inactive {
         background-color: #d1d1d1;
         color: #7a7a7a !important;
@@ -78,11 +71,10 @@ with col_logo2:
 st.markdown(f"<p style='text-align: center; font-size: 20px;'><b>Cotización:</b> 1 USD = {COTIZACION_OFICIAL:,} ARS</p>".replace(",", "."), unsafe_allow_html=True)
 st.divider()
 
-# Iniciar estado si no existe
 if 'calc_step' not in st.session_state:
     st.session_state.calc_step = False
 
-# PASO 1: ENTRADA BÁSICA (Monto y Comisión)
+# PASO 1: ENTRADA BÁSICA
 col1, col2 = st.columns(2)
 with col1:
     monto_texto = st.text_input("Monto en USD:", value="100.00", disabled=st.session_state.calc_step)
@@ -103,7 +95,6 @@ if not st.session_state.calc_step:
 
 # PASO 2: MOSTRAR RESULTADO Y PEDIR DATOS EXTRAS
 if st.session_state.calc_step:
-    # Lógica de cálculo
     MENOS_60 = 1.5
     MAS_60 = 0.025
     com_final = MENOS_60 if dol <= 60 else int(dol * MAS_60 * 100) / 100
@@ -120,7 +111,6 @@ if st.session_state.calc_step:
     def fmt_ars(n): return f"{int(n):,}".replace(",", ".")
     def fmt_usd(n): return f"{n:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-    # Recibo Visual (Resultado de cotización)
     st.markdown(f"""
     <div style="background-color: #f8f9fa; padding: 20px; border-radius: 15px; border-left: 5px solid #2ecc71; color: black; margin-bottom: 20px;">
         <h2 style="color: #27ae60; margin:0;">RECIBIR: {fmt_ars(monto_recibir_ars)} ARS</h2>
@@ -129,26 +119,26 @@ if st.session_state.calc_step:
     </div>
     """, unsafe_allow_html=True)
 
-    # DATOS DE DESTINO (Aparecen después de cotizar)
-    st.markdown("### 📝 Datos para el Recibo (Opcional)")
+    st.markdown("### 📝 Datos para el Recibo")
     bancos_lista = ["Banco Pichincha", "Banco Guayaquil", "Banco Pacífico", "Banco Bolivariano", "Banco Internacional", "Otro"]
-    banco_sel = st.selectbox("Banco remitente:", bancos_lista)
+    banco_sel = st.selectbox("Seleccione su banco remitente:", bancos_lista)
     
     banco_final = banco_sel
     if banco_sel == "Otro":
-        otro_banco = st.text_input("Especifique banco:")
+        # Placeholder específico: Ej. Produbanco
+        otro_banco = st.text_input("Especifique su banco:", placeholder="Ej. Produbanco")
         banco_final = f"Banco {otro_banco}" if otro_banco else "Otro Banco"
 
     c_cta1, c_cta2 = st.columns(2)
     with c_cta1:
-        cvu_cbu = st.text_input("CBU/CVU o Alias:")
+        # Placeholder específico: ingrese datos
+        cvu_cbu = st.text_input("Ingrese su CVU/CBU o Alias:", placeholder="ingrese datos")
     with c_cta2:
-        nombre_titular = st.text_input("Nombre y Apellido:")
+        # Placeholder específico: ingrese nombre
+        nombre_titular = st.text_input("Ingrese nombre y apellido:", placeholder="ingrese nombre")
 
-    # VALIDACIÓN PARA EL BOTÓN DE WHATSAPP
     datos_completos = cvu_cbu.strip() != "" and nombre_titular.strip() != ""
     
-    # Preparar mensaje
     mensaje = (
         f"Hola buen día, esta es mi cotización:\n\n"
         f"*ARQUI GIROS*\n"
@@ -171,7 +161,6 @@ if st.session_state.calc_step:
     msg_encoded = urllib.parse.quote(mensaje)
     share_url = f"https://api.whatsapp.com/send?text={msg_encoded}"
 
-    # Botón dinámico de WhatsApp
     if datos_completos:
         st.markdown(f'''
             <a href="{share_url}" target="_blank" class="whatsapp-btn-active">
@@ -186,10 +175,10 @@ if st.session_state.calc_step:
                 COMPLETE DATOS PARA ENVIAR
             </div>
             ''', unsafe_allow_html=True)
-        st.caption("⚠️ Ingrese CBU y Nombre para habilitar el envío.")
+        st.caption("⚠️ Por favor complete el CBU y Nombre para habilitar el botón de envío.")
 
     st.write("")
-    if st.button("🔄 NUEVA COTIZACIÓN"):
+    if st.button("🔄 REALIZAR NUEVA COTIZACIÓN"):
         st.session_state.calc_step = False
         st.rerun()
 
