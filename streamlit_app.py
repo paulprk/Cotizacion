@@ -16,6 +16,8 @@ st.markdown("""
     <style>
     .main { background-color: #ffffff; }
     .stRadio > div { flex-direction: row; justify-content: center; }
+    
+    /* Botón Calcular Principal */
     div.stButton > button:first-child {
         background-color: #1e3799;
         color: white;
@@ -24,19 +26,23 @@ st.markdown("""
         width: 100%;
         font-weight: bold;
     }
-    .whatsapp-button {
-        background-color: #25D366;
-        color: white;
-        padding: 18px;
-        text-align: center;
-        border-radius: 12px;
-        font-weight: bold;
-        font-size: 20px;
-        text-decoration: none;
-        display: block;
-        box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
+
+    /* Estilo para el Icono de WhatsApp Centrado */
+    .whatsapp-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
     }
-    /* Estilo para quitar bordes extras y centrar */
+    .whatsapp-icon {
+        width: 80px;
+        transition: transform 0.2s;
+        filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.2));
+    }
+    .whatsapp-icon:hover {
+        transform: scale(1.1);
+    }
+    
     input { text-align: center; }
     </style>
     """, unsafe_allow_html=True)
@@ -56,16 +62,14 @@ with col_logo2:
 st.markdown(f"<p style='text-align: center; font-size: 20px;'><b>Cotización del día:</b> 1 USD = {COTIZACION_OFICIAL:,} ARS</p>".replace(",", "."), unsafe_allow_html=True)
 st.divider()
 
-# 4. Entradas de datos (Manual sin botones +/-)
+# 4. Entradas de datos
 col1, col2 = st.columns(2)
 with col1:
-    # Usamos text_input para evitar los botones de + y -
     monto_texto = st.text_input("Monto en USD:", value="100.00")
     try:
         dol = float(monto_texto.replace(",", "."))
     except ValueError:
         dol = 0.0
-        st.error("Por favor, ingrese un número válido.")
 
 with col2:
     comision_sel = st.radio("¿Comisión?", ["Incluida", "Aparte"])
@@ -78,7 +82,6 @@ if btn_cotizar:
     if dol > 0:
         MENOS_60 = 1.5
         MAS_60 = 0.025
-
         if dol <= 60:
             com_final = MENOS_60
         else:
@@ -95,13 +98,12 @@ if btn_cotizar:
 
         def fmt_ars(n):
             return f"{int(n):,}".replace(",", ".")
-            
         def fmt_usd(n):
             return f"{n:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
         # 6. Recibo Visual
         st.markdown(f"""
-        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 15px; border-left: 5px solid #2ecc71; color: black;">
+        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 15px; border-left: 5px solid #2ecc71; color: black; margin-bottom: 20px;">
             <p style="margin:5px 0;"><b>Monto:</b> {fmt_usd(dol)} USD</p>
             <p style="margin:5px 0;"><b>Comisión:</b> {txt_com}</p>
             <hr>
@@ -110,7 +112,7 @@ if btn_cotizar:
         </div>
         """, unsafe_allow_html=True)
 
-        # 7. Mensaje de WhatsApp
+        # 7. Mensaje de WhatsApp y LINK CON ICONO
         mensaje = (
             f"Hola buen día, esta es mi cotización:\n\n"
             f"*ARQUI GIROS*\n"
@@ -128,14 +130,17 @@ if btn_cotizar:
         msg_encoded = urllib.parse.quote(mensaje)
         share_url = f"https://api.whatsapp.com/send?text={msg_encoded}"
 
-        st.write("")
+        # Icono de WhatsApp centrado
         st.markdown(f'''
-            <a href="{share_url}" target="_blank" class="whatsapp-button">
-                🟢 ENVIAR POR WHATSAPP
-            </a>
+            <div class="whatsapp-container">
+                <a href="{share_url}" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" class="whatsapp-icon" alt="WhatsApp">
+                </a>
+            </div>
+            <p style="text-align: center; color: #25D366; font-weight: bold;">Toca el icono para enviar</p>
             ''', unsafe_allow_html=True)
     else:
-        st.warning("Por favor, ingrese un monto válido mayor a 0.")
+        st.error("Por favor, ingrese un monto válido.")
 
 st.divider()
 st.caption("AL REALIZAR UN GIRO SE DA POR LEÍDO LOS T&C")
