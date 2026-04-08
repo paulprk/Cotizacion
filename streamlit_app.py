@@ -307,4 +307,8 @@ else:
     st.write("👋 ¡Bienvenido! Por favor, selecciona arriba qué tipo de cambio deseas realizar para comenzar.")
 
 st.divider()
-st.caption("AL REALIZAR UN GIRO SE DA POR LEÍDO LOS T&C")
+st.markdown("""
+    <p style='text-align: center; font-size: 13px; color: #666666;'>
+        Términos y Condiciones <a href='https://docs.google.com/document/d/165fPXyI-lQd3k9XbHgXii5wIor9cxmQRL59wJm5HP9g/edit?usp=sharing' target='_blank' style='color: #0066cc; text-decoration: none; font-weight: bold;'>click aquí</a>
+    </p>
+""", unsafe_allow_html=True)
