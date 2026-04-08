@@ -168,7 +168,7 @@ if opcion == "💵 Dólares a Pesos":
             f"💵 Monto: {f_usd(dol)} USD\n"
             f"⚙️ Comisión: {f_usd(com_final)} USD ({comision_sel})\n"
             f"💰 RECIBIR: {f_ars(recibir)} ARS\n"
-            f"💳 TRANSFERIR: {f_usd(transferir)} USD\n\n"
+            f"💳 TRANSFERIR: {f_usd(transferir)} USD\n"
             f"------------------------------\n"
             f"DATOS DE DESTINO:\n"
             f"👤 Nombre: {nombre.upper()}\n"
