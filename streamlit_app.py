@@ -36,6 +36,8 @@ st.markdown("""
         display: block;
         box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
     }
+    /* Estilo para quitar bordes extras y centrar */
+    input { text-align: center; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -54,15 +56,16 @@ with col_logo2:
 st.markdown(f"<p style='text-align: center; font-size: 20px;'><b>Cotización del día:</b> 1 USD = {COTIZACION_OFICIAL:,} ARS</p>".replace(",", "."), unsafe_allow_html=True)
 st.divider()
 
-# 4. Entradas de datos
+# 4. Entradas de datos (Manual sin botones +/-)
 col1, col2 = st.columns(2)
 with col1:
-    opciones_montos = ["50.00", "100.00", "200.00", "300.00", "400.00", "Otro monto..."]
-    seleccion = st.selectbox("Monto en USD:", opciones_montos, index=1)
-    if seleccion == "Otro monto...":
-        dol = st.number_input("Ingrese monto manual:", min_value=0.0, step=1.0, format="%.2f")
-    else:
-        dol = float(seleccion)
+    # Usamos text_input para evitar los botones de + y -
+    monto_texto = st.text_input("Monto en USD:", value="100.00")
+    try:
+        dol = float(monto_texto.replace(",", "."))
+    except ValueError:
+        dol = 0.0
+        st.error("Por favor, ingrese un número válido.")
 
 with col2:
     comision_sel = st.radio("¿Comisión?", ["Incluida", "Aparte"])
@@ -82,17 +85,14 @@ if btn_cotizar:
             com_final = int(dol * MAS_60 * 100) / 100
 
         if comision_sel == "Incluida":
-            # Redondeamos a cero decimales para PESOS
             monto_recibir_ars = round((dol - com_final) * COTIZACION_OFICIAL)
             monto_transferir_usd = dol
             txt_com = f"{com_final:.2f} USD (Incluida)"
         else:
-            # Redondeamos a cero decimales para PESOS
             monto_recibir_ars = round(dol * COTIZACION_OFICIAL)
             monto_transferir_usd = dol + com_final
             txt_com = f"{com_final:.2f} USD (Aparte)"
 
-        # Función para formatear con puntos de miles
         def fmt_ars(n):
             return f"{int(n):,}".replace(",", ".")
             
@@ -135,7 +135,7 @@ if btn_cotizar:
             </a>
             ''', unsafe_allow_html=True)
     else:
-        st.warning("Por favor, ingrese un monto mayor a 0.")
+        st.warning("Por favor, ingrese un monto válido mayor a 0.")
 
 st.divider()
 st.caption("AL REALIZAR UN GIRO SE DA POR LEÍDO LOS T&C")
