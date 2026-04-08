@@ -75,7 +75,7 @@ st.markdown("""
         align-items: center;
         justify-content: center;
         gap: 8px;
-        padding: 6px 15px; /* Altura mínima para que sea rectangular y fino */
+        padding: 12px 15px; /* Altura mínima para que sea rectangular y fino */
         border-radius: 6px;
         font-weight: 600;
         font-size: 14px;
