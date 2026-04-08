@@ -31,7 +31,7 @@ st.markdown("""
         color: white !important;
         padding: 10px 20px;
         text-align: center;
-        border-radius: 30px; /* Bordes más redondeados para estilo moderno */
+        border-radius: 30px;
         font-weight: 600;
         font-size: 16px;
         text-decoration: none;
@@ -41,7 +41,7 @@ st.markdown("""
         gap: 8px;
         box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
         width: fit-content;
-        margin: 10px auto; /* Centrado y menos invasivo */
+        margin: 10px auto;
     }
 
     .whatsapp-btn-inactive {
@@ -64,6 +64,16 @@ st.markdown("""
     
     .whatsapp-btn img { width: 20px; height: 20px; }
     input { text-align: center; }
+    
+    /* Estilo para las explicaciones de comisión */
+    .comision-info {
+        text-align: center;
+        font-size: 13px;
+        color: #666;
+        margin-top: -10px;
+        margin-bottom: 10px;
+        font-style: italic;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -94,6 +104,11 @@ with col1:
         dol = 0.0
 with col2:
     comision_sel = st.radio("Comisión", ["Incluida", "Aparte"], disabled=st.session_state.calc_step)
+    # Aclaración dinámica de comisión
+    if comision_sel == "Incluida":
+        st.markdown('<p class="comision-info">Se descuenta del monto enviado</p>', unsafe_allow_html=True)
+    else:
+        st.markdown('<p class="comision-info">Se suma al valor a enviar</p>', unsafe_allow_html=True)
 
 if not st.session_state.calc_step:
     if st.button("🚀 CALCULAR COTIZACIÓN"):
