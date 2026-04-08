@@ -155,8 +155,9 @@ if opcion == "💵 Dólares a Pesos":
 
         ws_icon_url = "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
         
-        # 1. Obtenemos la fecha y hora actual en el formato deseado
-        fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M")
+        # 1. Obtenemos la fecha y hora de Argentina (UTC -3)
+        hora_argentina = datetime.utcnow() - timedelta(hours=3)
+        fecha_actual = hora_argentina.strftime("%d/%m/%Y %H:%M")
         
         # 2. Armamos el bloque de texto con el formato exacto
         texto_whatsapp_usd = (
