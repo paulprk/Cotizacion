@@ -411,8 +411,10 @@
             img.style.filter = "none"; warn.classList.add('hidden');
 
             const tipoCom = document.querySelector('input[name="usd_comision"]:checked').value;
-            const msg = `Hola Arqui Giros, cotización USD a ARS:\n------------------------------\n📅 Fecha: ${getHoraArgentina()}\n🏦 Banco: ${banco}\n\n💵 Monto: ${f_usd(actual_usd_dol)} USD\n⚙️ Comisión: ${f_usd(actual_usd_comision)} USD (${tipoCom})\n💰 RECIBIR: ${f_ars(actual_usd_recibir)} ARS\n💳 TRANSFERIR: ${f_usd(actual_usd_transferir)} USD\n------------------------------\nDATOS DE DESTINO:\n👤 Nombre: ${nombre.toUpperCase()}\n🔑 CBU/CVU/Alias: ${cvu}\n------------------------------\nTasa aplicada: 1 USD = ${f_ars(TASA_USD_A_ARS)}\n\nMe ayudas con la cuenta por favor.`;
-            btn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+            const nombreCliente = document.getElementById('usd_nombre').value.toUpperCase();
+            const msg = `¡Hola Arqui Giros! 👋\n\nAcabo de generar una orden en la web.\n👤 Cliente: ${nombreCliente}\n\n🆔 Por favor, confírmenme los datos para realizar la transferencia.`;
+        
+            btn.href = `https://api.whatsapp.com/send?phone=TU_NUMERO_AQUI&text=${encodeURIComponent(msg)}`;
         } else {
             btn.classList.add('bg-inactive'); btn.classList.remove('bg-active');
             img.style.filter = "grayscale(1)"; warn.classList.remove('hidden');
